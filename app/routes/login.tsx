@@ -30,7 +30,7 @@ export default function LoginPage({ }: Route.ComponentProps) {
 
 function LoginCard() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectUrl") || "/dashboard";
+  const redirectTo = searchParams.get("redirectUrl") || "/";
 
   const googleRegister = () => signIn.social({
     provider: "google",
