@@ -26,19 +26,20 @@ import { NavLink, Outlet, useNavigate } from 'react-router'
 import { requireAuth } from '~/services/auth/auth_utils.server'
 import type { Route } from './+types/layout'
 import { signOut } from '~/services/auth/auth_client'
+import { is } from 'drizzle-orm'
 
 const navigation = [
-  { name: 'Dashboard', to: '/admin', icon: HomeIcon, current: true },
+  { name: 'Dashboard', to: '/admin', icon: HomeIcon, end: true },
   // { name: 'Team', to: '/admin/team', icon: UsersIcon, current: false },
-  // { name: 'Projects', to: '/admin/projects', icon: FolderIcon, current: false },
-  // { name: 'Calendar', to: '/admin/calendar', icon: CalendarIcon, current: false },
+  { name: 'Programs', to: '/admin/programs', icon: FolderIcon, end: false },
+  { name: 'Events', to: '/admin/events', icon: CalendarIcon, end: false },
   // { name: 'Documents', to: '/admin/documents', icon: DocumentDuplicateIcon, current: false },
   // { name: 'Reports', to: '/admin/reports', icon: ChartPieIcon, current: false },
 ]
 const teams = [
-  { id: 1, name: 'Heroicons', to: '#', initial: 'H', current: false },
-  { id: 2, name: 'Tailwind Labs', to: '#', initial: 'T', current: false },
-  { id: 3, name: 'Workcation', to: '#', initial: 'W', current: false },
+  { id: 1, name: 'Heroicons', to: '#', initial: 'H', end: false },
+  { id: 2, name: 'Tailwind Labs', to: '#', initial: 'T', end: false },
+  { id: 3, name: 'Workcation', to: '#', initial: 'W', end: false },
 ]
 
 
@@ -115,6 +116,7 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
                           <li key={item.name}>
                             <NavLink
                               to={item.to}
+                              end={item.end}
                               className={({ isActive }) =>
                                 clsx(
                                   isActive
@@ -123,14 +125,18 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
                                   'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
                                 )}
                             >
-                              <item.icon
-                                aria-hidden="true"
-                                className={clsx(
-                                  item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
-                                  'size-6 shrink-0',
-                                )}
-                              />
-                              {item.name}
+                              {({ isActive }) => (
+                                <>
+                                  <item.icon
+                                    aria-hidden="true"
+                                    className={clsx(
+                                      isActive ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                                      'size-6 shrink-0',
+                                    )}
+                                  />
+                                  {item.name}
+                                </>
+                              )}
                             </NavLink>
                           </li>
                         ))}
@@ -143,6 +149,7 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
                           <li key={team.name}>
                             <NavLink
                               to={team.to}
+                              end={team.end}
                               className={({ isActive }) => clsx(
                                 isActive
                                   ? 'bg-gray-50 text-indigo-600'
@@ -152,7 +159,7 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
                             >
                               <span
                                 className={clsx(
-                                  team.current
+                                  team.end
                                     ? 'border-indigo-600 text-indigo-600'
                                     : 'border-gray-200 text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600',
                                   'flex size-6 shrink-0 items-center justify-center rounded-lg border bg-white text-[0.625rem] font-medium',
@@ -233,21 +240,25 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
                           <li key={item.name}>
                             <NavLink
                               to={item.to}
-                              className={clsx(
-                                item.current
+                              className={({ isActive }) => clsx(
+                                isActive
                                   ? 'bg-gray-50 text-indigo-600'
                                   : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
                                 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
                               )}
                             >
-                              <item.icon
-                                aria-hidden="true"
-                                className={clsx(
-                                  item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
-                                  'size-6 shrink-0',
-                                )}
-                              />
-                              {item.name}
+                              {({ isActive }) => (
+                                <>
+                                  <item.icon
+                                    aria-hidden="true"
+                                    className={clsx(
+                                      isActive ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                                      'size-6 shrink-0',
+                                    )}
+                                  />
+                                  {item.name}
+                                </>
+                              )}
                             </NavLink>
                           </li>
                         ))}
@@ -261,7 +272,7 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
                             <NavLink
                               to={team.to}
                               className={({ isActive }) => clsx(
-                                team.current
+                                team.end
                                   ? 'bg-gray-50 text-indigo-600'
                                   : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
                                 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
@@ -269,7 +280,7 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
                             >
                               <span
                                 className={clsx(
-                                  team.current
+                                  team.end
                                     ? 'border-indigo-600 text-indigo-600'
                                     : 'border-gray-200 text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600',
                                   'flex size-6 shrink-0 items-center justify-center rounded-lg border bg-white text-[0.625rem] font-medium',
