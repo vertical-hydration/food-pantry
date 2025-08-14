@@ -13,7 +13,10 @@ export default [
   ...prefix("admin", [
     layout("routes/admin/layout.tsx", [
       index("routes/admin/admin_index.tsx"),
-      ...prefix("programs", [index("routes/admin/programs/prog_index.tsx")]),
+      ...prefix("programs", [
+        index("routes/admin/programs/prog_index.tsx"),
+        route("create", "routes/admin/programs/add_program.tsx"),
+      ]),
       ...prefix("events", [index("routes/admin/events/events_index.tsx")]),
     ]),
   ]),

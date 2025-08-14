@@ -1,18 +1,26 @@
+import { Link } from "react-router";
+import type { Route } from "./+types/prog_index";
+import { getPrograms } from "./data.server";
 
 
 
 
-const programs = [
-  {
-    id: 1,
-    name: 'Food Box Pickup',
-    description: 'Users must pick up their food boxes on the designated days.',
-    status: 'Active'
-  },
+export async function loader() {
+  const programs = await getPrograms();
 
-]
+  return { programs };
+}
 
-export default function Programs() {
+export async function action({ request }: Route.ActionArgs) {
+
+
+  // Perform your action here, e.g., create a new program
+  return null;
+}
+
+export default function Programs({ loaderData }: Route.ComponentProps) {
+  const { programs } = loaderData;
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
@@ -25,12 +33,14 @@ export default function Programs() {
           </p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            type="button"
-            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Add Program
-          </button>
+          <Link to="create">
+            <button
+              type="button"
+              className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Add Program
+            </button>
+          </Link>
         </div>
       </div>
       <div className="mt-8 flow-root">
@@ -59,7 +69,7 @@ export default function Programs() {
                     <td
                       className="px-3 py-4 text-sm whitespace-nowrap text-gray-500"
                     >
-                      {program.description}
+                      {program.status}
                     </td>
                     <td
                       className="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-0"
