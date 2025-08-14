@@ -6,6 +6,7 @@ import { createAccessControl } from "better-auth/plugins/access";
 const statement = {
   event: ["create", "update", "delete"],
   program: ["create", "update", "delete"],
+  settings: ["view", "edit"],
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -13,4 +14,5 @@ export const ac = createAccessControl(statement);
 export const staff = ac.newRole({
   event: ["create", "update", "delete"],
   program: ["create", "update", "delete"],
+  settings: ["view", "edit"],
 });

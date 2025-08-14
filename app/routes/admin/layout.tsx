@@ -23,7 +23,10 @@ import {
 } from '@heroicons/react/24/outline'
 import { clsx } from 'clsx'
 import { NavLink, Outlet, useNavigate } from 'react-router'
-import { requireAuth } from '~/services/auth/auth_utils.server'
+import {
+  // requireAuth,
+  requireSettingsView,
+} from '~/services/auth/auth_utils.server'
 import type { Route } from './+types/layout'
 import { signOut } from '~/services/auth/auth_client'
 import { is } from 'drizzle-orm'
@@ -44,7 +47,7 @@ const teams = [
 
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { user } = await requireAuth({ request })
+  const { user } = await requireSettingsView({ request })
 
   return { user }
 
