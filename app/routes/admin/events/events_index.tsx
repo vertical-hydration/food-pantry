@@ -1,3 +1,5 @@
+import type { Route } from "./+types/events_index";
+import { getEvents } from "./data.server";
 
 
 
@@ -15,7 +17,16 @@ const events = [
 
 ]
 
-export default function EventsIndex() {
+
+export async function loader() {
+  const { events } = await getEvents();
+
+  return { events };
+}
+
+export default function EventsIndex({ loaderData }: Route.ComponentProps) {
+  const { events } = loaderData;
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
@@ -63,12 +74,12 @@ export default function EventsIndex() {
                       {event.name}
                     </td>
                     <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-                      {event.programName}
+                      {event.programId}
                     </td>
                     <td
                       className="py-4 pr-4 pl-3 text-left text-sm font-medium whitespace-nowrap sm:pr-0"
                     >
-                      {event.date.toLocaleDateString()}
+                      {event.eventDate ? event.eventDate.toLocaleDateString() : "N/A"}
                     </td>
                     <td
                       className="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-0"

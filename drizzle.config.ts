@@ -6,7 +6,7 @@ config({ path: ".env" });
 export default defineConfig({
   dialect: "postgresql",
   schema: [
-    "./app/services/db/schema/index.ts",
+    "./app/services/db/schema/auth_schema.ts",
     "./app/services/db/schema/food_pantry.ts",
   ],
   out: "./app/services/db/migrations",
