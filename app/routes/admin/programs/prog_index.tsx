@@ -74,9 +74,9 @@ export default function Programs({ loaderData }: Route.ComponentProps) {
                     <td
                       className="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-0"
                     >
-                      <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                        Edit<span className="sr-only">, {program.name}</span>
-                      </a>
+                      <Link to={`/admin/programs/${program.id}`} className="text-indigo-600 hover:text-indigo-900">
+                        Link<span className="sr-only">, {program.name}</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}

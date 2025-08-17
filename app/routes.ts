@@ -16,6 +16,15 @@ export default [
       ...prefix("programs", [
         index("routes/admin/programs/prog_index.tsx"),
         route("create", "routes/admin/programs/add_program.tsx"),
+        ...prefix(":programId", [
+          layout("routes/admin/programs/program_layout.tsx", [
+            index("routes/admin/programs/program_dashboard.tsx"),
+            route(
+              "applications",
+              "routes/admin/programs/program_applications.tsx"
+            ),
+          ]),
+        ]),
       ]),
       ...prefix("events", [index("routes/admin/events/events_index.tsx")]),
     ]),
