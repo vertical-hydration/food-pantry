@@ -10,6 +10,13 @@ export default [
   route("api/auth/*", "routes/auth_api.tsx"),
   index("routes/home.tsx"),
   route("login", "routes/login.tsx"),
+  ...prefix("community", [
+    layout("routes/community/layout.tsx", [
+      index("routes/community/home.tsx"),
+      ...prefix("programs", [index("routes/community/programs.tsx")]),
+    ]),
+    //  route("programs", ""),
+  ]),
   ...prefix("admin", [
     layout("routes/admin/layout.tsx", [
       index("routes/admin/admin_index.tsx"),
