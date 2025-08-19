@@ -10,13 +10,22 @@ export default [
   route("api/auth/*", "routes/auth_api.tsx"),
   index("routes/home.tsx"),
   route("login", "routes/login.tsx"),
+
+  // community Routes
   ...prefix("community", [
     layout("routes/community/layout.tsx", [
       index("routes/community/home.tsx"),
-      ...prefix("programs", [index("routes/community/programs.tsx")]),
+      ...prefix("programs", [
+        index("routes/community/programs.tsx"),
+        ...prefix(":programId", [
+          index("routes/community/program_details.tsx"),
+          route("apply", "routes/community/program_apply.tsx"),
+        ]),
+      ]),
     ]),
     //  route("programs", ""),
   ]),
+  // Admin Routes
   ...prefix("admin", [
     layout("routes/admin/layout.tsx", [
       index("routes/admin/admin_index.tsx"),

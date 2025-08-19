@@ -1,4 +1,5 @@
 
+import { Link } from "react-router";
 import type { Route } from "./+types/programs";
 import { getOpenPrograms } from "./data.server";
 
@@ -32,12 +33,12 @@ export default function Programs({ loaderData }: Route.ComponentProps) {
                   <h2 className="text-xl font-semibold mb-2">{program.name}</h2>
                   <p className="text-gray-600 mb-4">{program.description || "No description available."}</p>
                 </div>
-                <button
-                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                  onClick={() => alert(`Apply for ${program.name}`)}
+                <Link
+                  className="mt-4 px-4 py-2 bg-blue-600 text-white text-center rounded hover:bg-blue-700 transition"
+                  to={`/community/programs/${program.id}`}
                 >
                   Apply
-                </button>
+                </Link>
               </div>
             ))
           ) : (
