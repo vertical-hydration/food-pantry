@@ -15,6 +15,13 @@
       "when": 1755195821082,
       "tag": "0001_white_leo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1755622039873,
+      "tag": "0002_tidy_blur",
+      "breakpoints": true
     }
   ]
 }
