@@ -1,3 +1,8 @@
+import { parseWithZod } from "@conform-to/zod/v4";
+import { AddressSchema } from "./schemas";
+import { db } from "~/services/db/db.server";
+import { profiles } from "~/services/db/schema";
+
 const getOpenPrograms = async () => {
   const programs = [
     {
@@ -15,4 +20,50 @@ const getOpenPrograms = async () => {
   return { programs };
 };
 
-export { getOpenPrograms };
+const saveProfileAddress = async ({
+  formData,
+  userId,
+}: {
+  formData: FormData;
+  userId: string;
+}) => {
+  const submission = parseWithZod(formData, {
+    schema: AddressSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const { firstName, lastName, street, street2, zip, city, state } =
+    submission.value;
+
+  await db
+    .insert(profiles)
+    .values({
+      id: userId,
+      firstName,
+      lastName,
+      street,
+      street2,
+      city,
+      state,
+      zip,
+    })
+    .onConflictDoUpdate({
+      target: profiles.id,
+      set: {
+        firstName,
+        lastName,
+        street,
+        street2,
+        city,
+        state,
+        zip,
+      },
+    });
+
+  return submission.reply();
+};
+
+export { getOpenPrograms, saveProfileAddress };

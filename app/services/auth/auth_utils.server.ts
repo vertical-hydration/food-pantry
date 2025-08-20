@@ -5,7 +5,7 @@ import { db } from "~/services/db/db.server";
 
 const requireAuth = async ({ request }: { request: Request }) => {
   const data = await auth.api.getSession(request);
-  console.log("Protected Route Loader - Session:", data);
+
   if (!data?.user) {
     const url = new URL(request.url);
     const currentPath = url.pathname;

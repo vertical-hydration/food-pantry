@@ -1,14 +1,17 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Bars3Icon, BellIcon, UserCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Outlet } from 'react-router'
 import { clsx } from 'clsx'
+import type { Route } from './+types/layout'
+import { requireAuth } from '~/services/auth/auth_utils.server'
+import { signOut } from '~/services/auth/auth_client'
 
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
+// const user = {
+//   name: 'Tom Cook',
+//   email: 'tom@example.com',
+//   imageUrl:
+//     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+// }
 const navigation = [
   { name: 'Dashboard', href: '/community', current: true },
   { name: 'Programs', href: '/community/programs', current: false },
@@ -17,13 +20,23 @@ const navigation = [
 ]
 const userNavigation = [
   { name: 'Your profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
 ]
 
+export async function loader({ request }: Route.LoaderArgs) {
+
+  const data = await requireAuth({ request })
+  return { user: data.user }
+}
 
 
-export default function Example() {
+
+export default function CommunityLayout({ loaderData }: Route.ComponentProps) {
+  const { user } = loaderData
+
+
+
+
+
   return (
     <>
       {/*
@@ -79,11 +92,14 @@ export default function Example() {
                   <MenuButton className="relative flex max-w-xs items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">Open user menu</span>
-                    <img
-                      alt=""
-                      src={user.imageUrl}
-                      className="size-8 rounded-full outline -outline-offset-1 outline-black/5"
-                    />
+                    {
+                      user.image ? <img
+                        alt=""
+                        src={user.image}
+                        className="size-8 rounded-full outline -outline-offset-1 outline-black/5"
+                      /> : <UserCircleIcon className="size-8 rounded-full outline -outline-offset-1 outline-black/5" />
+                    }
+
                   </MenuButton>
 
                   <MenuItems
@@ -100,6 +116,14 @@ export default function Example() {
                         </a>
                       </MenuItem>
                     ))}
+                    <MenuItem>
+                      <button
+                        onClick={() => signOut()}
+                        className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
+                      >
+                        Sign out
+                      </button>
+                    </MenuItem>
                   </MenuItems>
                 </Menu>
               </div>
@@ -137,11 +161,15 @@ export default function Example() {
             <div className="border-t border-gray-200 pt-4 pb-3">
               <div className="flex items-center px-4">
                 <div className="shrink-0">
-                  <img
-                    alt=""
-                    src={user.imageUrl}
-                    className="size-10 rounded-full outline -outline-offset-1 outline-black/5"
-                  />
+                  {user.image ? (
+                    <img
+                      alt=""
+                      src={user.image}
+                      className="size-10 rounded-full outline -outline-offset-1 outline-black/5"
+                    />
+                  ) : (
+                    <UserCircleIcon className="size-10 rounded-full outline -outline-offset-1 outline-black/5" />
+                  )}
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">{user.name}</div>
@@ -157,7 +185,7 @@ export default function Example() {
                 </button>
               </div>
               <div className="mt-3 space-y-1">
-                {userNavigation.map((item) => (
+                {/* {userNavigation.map((item) => (
                   <DisclosureButton
                     key={item.name}
                     as="a"
@@ -166,7 +194,14 @@ export default function Example() {
                   >
                     {item.name}
                   </DisclosureButton>
-                ))}
+                ))} */}
+                <DisclosureButton
+                  as="button"
+                  onClick={() => signOut()}
+                  className="block w-full outline text-center px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                >
+                  Sign out
+                </DisclosureButton>
               </div>
             </div>
           </DisclosurePanel>
