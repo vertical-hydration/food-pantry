@@ -1,11 +1,13 @@
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { requireAuth } from '~/services/auth/auth_utils.server'
 import type { Route } from './+types/program_apply'
-import { AddressSchema } from './schemas';
+import { AddressSchema, AddStudentSchema, ValidApplyIntents } from './schemas';
 import { parseWithZod } from '@conform-to/zod/v4';
-import { Form } from 'react-router';
-import { saveProfileAddress } from './data.server';
+import { Form, useLoaderData } from 'react-router';
+import { addStudent, getApplicationData, getStudents, saveProfileAddress } from './data.server';
 import AddStudentForm from './components/add_student_form';
+import EditAddressForm from './components/edit_address_form';
+import AddressCard from './components/address_card';
 
 
 const students = [
@@ -17,8 +19,10 @@ const students = [
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { user } = await requireAuth({ request });
+  const students = await getStudents({ userId: user.id });
+  const data = await getApplicationData({ userId: user.id });
 
-  return { user };
+  return { user, students, data };
 };
 
 export async function action({ request }: Route.ActionArgs) {
@@ -26,16 +30,28 @@ export async function action({ request }: Route.ActionArgs) {
 
   const formData = await request.formData();
 
-  console.log("formData", formData);
+  const intent = formData.get('intent');
 
-  await saveProfileAddress({ formData, userId: user.id });
+  if (intent === 'saveAddress') {
+    await saveProfileAddress({ formData, userId: user.id });
+  }
+
+  if (intent === 'addStudent') {
+    // Handle adding a student
+
+    return await addStudent({ formData, userId: user.id });
+  }
+
+  const submission = parseWithZod(formData, { schema: ValidApplyIntents });
+
+  return submission.reply();
 
 };
 
 
 
 export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
-  const { user } = loaderData;
+  const { user, students, data } = loaderData;
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -47,7 +63,21 @@ export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
             <p className="mt-1 text-sm/6 text-gray-600">Use a permanent address where you can receive mail.</p>
           </div>
 
-          <ProfileForm />
+          <div className="space-y-4 md:col-span-2">
+            <AddressCard
+              email={user.email}
+              programName={"user.programName"}
+              firstName={"user.firstName"}
+              lastName={"user.lastName"}
+              street={"user.street"}
+              street2={"user.street2"}
+              city={"user.city"}
+              state={"user.state"}
+              zip={"user.zip"}
+            />
+            <EditAddressForm />
+          </div>
+          {/* <ProfileForm /> */}
         </div>
         <div className="grid grid-cols-1 gap-x-8 gap-y-8 py-10 md:grid-cols-3">
           <div className="px-4 sm:px-0">
@@ -60,7 +90,12 @@ export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
           </div>
           <div className="space-y-4 md:col-span-2">
 
-            <StudentList />
+            <StudentList
+            // students={students} 
+            />
+            <pre>
+              {JSON.stringify(students, null, 2)}
+            </pre>
             <AddStudentForm />
 
           </div>
@@ -312,6 +347,7 @@ function AddStudentCard() {
 
 
 function StudentList() {
+  const { students } = useLoaderData<typeof loader>();
 
   if (students.length === 0) {
     return <EmptyState />
@@ -324,7 +360,7 @@ function StudentList() {
           <div className="min-w-0">
             <div className="flex items-start gap-x-3">
               <p className="text-sm/6 font-semibold text-gray-900">
-                {student.name}
+                {student.firstName} {student.lastName}
               </p>
             </div>
             <div
@@ -346,7 +382,7 @@ function StudentList() {
               type="button"
               className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 "
             >
-              Remove <span className="sr-only">, {student.name}</span>
+              Remove <span className="sr-only">, {student.firstName} {student.lastName}</span>
             </button>
 
           </div>

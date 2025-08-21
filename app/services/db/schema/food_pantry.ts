@@ -11,6 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { users } from "./auth_schema";
 import { randomUUID } from "crypto";
+import { relations } from "drizzle-orm";
 
 export const foodPantry = pgSchema("food_pantry");
 
@@ -96,3 +97,14 @@ export const applications = foodPantry.table("applications", {
   acceptedDate: timestamp("accepted_date"),
   ...timestamps,
 });
+
+export const usersRelations = relations(users, ({ one, many }) => ({
+  students: many(students),
+}));
+
+export const studentsRelations = relations(students, ({ one }) => ({
+  user: one(users, {
+    fields: [students.userId],
+    references: [users.id],
+  }),
+}));

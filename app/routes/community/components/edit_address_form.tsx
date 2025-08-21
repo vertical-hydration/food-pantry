@@ -7,18 +7,16 @@ import {
 } from "@headlessui/react"
 import {
   ChevronDownIcon,
-  AcademicCapIcon
+  HomeIcon
 } from '@heroicons/react/24/outline'
 import { TextGroupInput } from '~/components/text_input_group'
 import { useForm } from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod/v4"
-import { AddStudentSchema } from "../schemas"
+import { AddressSchema } from "../schemas"
 import { Form, useFetcher } from "react-router"
-import type { Route } from "../+types/program_apply"
-import type { SubmissionResult } from "@conform-to/react";
 import type { action } from "../program_apply"
 
-export default function AddStudentForm() {
+export default function EditAddressForm() {
   const [open, setOpen] = useState(false)
   const fetcher = useFetcher<typeof action>();
   const state = fetcher.state;
@@ -27,7 +25,7 @@ export default function AddStudentForm() {
 
   const [form, fields] = useForm({
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema: AddStudentSchema })
+      return parseWithZod(formData, { schema: AddressSchema })
     },
     lastResult: lastAction,
   })
@@ -45,7 +43,7 @@ export default function AddStudentForm() {
         onClick={() => setOpen(true)}
         className="rounded-md bg-gray-950/5 px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-950/10"
       >
-        Add Student
+        Edit Address
       </button>
       <Dialog open={open} onClose={setOpen} className="relative z-10">
         <DialogBackdrop
@@ -65,14 +63,14 @@ export default function AddStudentForm() {
                 id={form.id}
               >
                 <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-green-100">
-                  <AcademicCapIcon
+                  <HomeIcon
                     aria-hidden="true"
                     className="size-6 text-green-600"
                   />
                 </div>
                 <div className="mt-3 text-center sm:mt-5">
                   <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
-                    Add Student
+                    Edit Profile
                   </DialogTitle>
                   <div className="px-6">
                     <div
@@ -96,35 +94,47 @@ export default function AddStudentForm() {
                         errors={fields.lastName.errors}
                         autoComplete={fields.lastName.id}
                       />
+                      <TextGroupInput
+                        label={"Apartment/Unit"}
+                        id={fields.street2.id}
+                        name={fields.street2.name}
+                        defaultValue={fields.street2.defaultValue}
+                        errors={fields.street2.errors}
+                        autoComplete={fields.street2.id}
+                      />
+                      <TextGroupInput
+                        label={"Street"}
+                        id={fields.street.id}
+                        name={fields.street.name}
+                        defaultValue={fields.street.defaultValue}
+                        errors={fields.street.errors}
+                        autoComplete={fields.street.id}
+                      />
+                      <TextGroupInput
+                        label={"City"}
+                        id={fields.city.id}
+                        name={fields.city.name}
+                        defaultValue={fields.city.defaultValue}
+                        errors={fields.city.errors}
+                        autoComplete={fields.city.id}
+                      />
+                      <TextGroupInput
+                        label={"State"}
+                        id={fields.state.id}
+                        name={fields.state.name}
+                        defaultValue={fields.state.defaultValue}
+                        errors={fields.state.errors}
+                        autoComplete={fields.state.id}
+                      />
+                      <TextGroupInput
+                        label={"ZIP Code"}
+                        id={fields.zip.id}
+                        name={fields.zip.name}
+                        defaultValue={fields.zip.defaultValue}
+                        errors={fields.zip.errors}
+                        autoComplete={fields.zip.id}
+                      />
 
-                      <div className="sm:col-span-3">
-                        <label htmlFor="school" className="block text-sm/6 font-medium text-gray-900">
-                          School
-                        </label>
-                        <div className="mt-2 grid grid-cols-1">
-                          <select
-                            id="school"
-                            name="school"
-                            className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                          >
-                            <option value="primary">Primary</option>
-                            <option value="elementary">Elementary</option>
-                            <option value="middle">Middle</option>
-                            <option value="high">High</option>
-                          </select>
-                          <ChevronDownIcon
-                            aria-hidden="true"
-                            className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                          />
-                        </div>
-                        <p className="mt-2 text-sm text-left text-red-600">
-                          {
-                            fields.school.errors
-                              ? fields.school.errors[0]
-                              : null
-                          }
-                        </p>
-                      </div>
                     </div>
                   </div>
                   <pre>
@@ -137,11 +147,11 @@ export default function AddStudentForm() {
                   <button
                     type="submit"
                     name="intent"
-                    value="addStudent"
+                    value="saveAddress"
 
                     className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                   >
-                    Add Student
+                    Save Address
                   </button>
                   <button
                     type="button"

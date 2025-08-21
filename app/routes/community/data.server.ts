@@ -1,7 +1,7 @@
 import { parseWithZod } from "@conform-to/zod/v4";
-import { AddressSchema } from "./schemas";
+import { AddressSchema, AddStudentSchema } from "./schemas";
 import { db } from "~/services/db/db.server";
-import { profiles } from "~/services/db/schema";
+import { profiles, students } from "~/services/db/schema";
 
 const getOpenPrograms = async () => {
   const programs = [
@@ -66,4 +66,52 @@ const saveProfileAddress = async ({
   return submission.reply();
 };
 
-export { getOpenPrograms, saveProfileAddress };
+const addStudent = async ({
+  formData,
+  userId,
+}: {
+  formData: FormData;
+  userId: string;
+}) => {
+  const submission = parseWithZod(formData, {
+    schema: AddStudentSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+  const { firstName, lastName, school } = submission.value;
+
+  await db.insert(students).values({
+    firstName,
+    lastName,
+    school,
+    userId,
+  });
+
+  return submission.reply();
+};
+
+const getStudents = async ({ userId }: { userId: string }) => {
+  return await db.query.students.findMany({
+    where: (students, { eq }) => eq(students.userId, userId),
+  });
+};
+
+const getApplicationData = async ({ userId }: { userId: string }) => {
+  return await db.query.users.findFirst({
+    where: (users, { eq }) => eq(users.id, userId),
+    with: {
+      students: true,
+      // profiles,
+    },
+  });
+};
+
+export {
+  getOpenPrograms,
+  saveProfileAddress,
+  addStudent,
+  getStudents,
+  getApplicationData,
+};
