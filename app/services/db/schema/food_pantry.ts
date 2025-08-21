@@ -8,6 +8,7 @@ import {
   pgSchema,
   pgEnum,
   uuid,
+  json,
 } from "drizzle-orm/pg-core";
 import { users } from "./auth_schema";
 import { randomUUID } from "crypto";
@@ -35,10 +36,11 @@ export const applicationStatusEnum = pgEnum("application_status", [
 ]);
 
 const timestamps = {
-  createdAt: timestamp("created_at").$defaultFn(
-    () => /* @__PURE__ */ new Date()
-  ),
+  createdAt: timestamp("created_at")
+    .notNull()
+    .$defaultFn(() => /* @__PURE__ */ new Date()),
   updatedAt: timestamp("updated_at")
+    .notNull()
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .$onUpdateFn(() => new Date()),
 };
@@ -95,6 +97,7 @@ export const applications = foodPantry.table("applications", {
   email: text().notNull(),
   status: applicationStatusEnum().default("submitted"),
   acceptedDate: timestamp("accepted_date"),
+  students: json(),
   ...timestamps,
 });
 

@@ -1,7 +1,7 @@
 import { parseWithZod } from "@conform-to/zod/v4";
 import { AddressSchema, AddStudentSchema } from "./schemas";
 import { db } from "~/services/db/db.server";
-import { profiles, students } from "~/services/db/schema";
+import { profiles, programs, students } from "~/services/db/schema";
 
 const getOpenPrograms = async () => {
   const programs = [
@@ -98,14 +98,32 @@ const getStudents = async ({ userId }: { userId: string }) => {
   });
 };
 
-const getApplicationData = async ({ userId }: { userId: string }) => {
-  return await db.query.users.findFirst({
-    where: (users, { eq }) => eq(users.id, userId),
-    with: {
-      students: true,
-      // profiles,
-    },
+const getProfile = async ({ userId }: { userId: string }) => {
+  return await db.query.profiles.findFirst({
+    where: (profiles, { eq }) => eq(profiles.id, userId),
   });
+};
+
+const getProgram = async ({ programId }: { programId: string }) => {
+  return await db.query.programs.findFirst({
+    where: (programs, { eq }) => eq(programs.id, Number(programId)),
+  });
+};
+
+const getApplicationData = async ({
+  userId,
+  programId,
+}: {
+  userId: string;
+  programId: string;
+}) => {
+  const students = await getStudents({ userId });
+
+  const profile = await getProfile({ userId });
+
+  const program = await getProgram({ programId });
+
+  return { students, profile, program };
 };
 
 export {

@@ -1,10 +1,14 @@
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { requireAuth } from '~/services/auth/auth_utils.server'
 import type { Route } from './+types/program_apply'
-import { AddressSchema, AddStudentSchema, ValidApplyIntents } from './schemas';
+import { ValidApplyIntents } from './schemas';
 import { parseWithZod } from '@conform-to/zod/v4';
-import { Form, useLoaderData } from 'react-router';
-import { addStudent, getApplicationData, getStudents, saveProfileAddress } from './data.server';
+import { Form, useLoaderData, useRouteLoaderData } from 'react-router';
+import {
+  addStudent,
+  getApplicationData,
+  saveProfileAddress
+} from './data.server';
 import AddStudentForm from './components/add_student_form';
 import EditAddressForm from './components/edit_address_form';
 import AddressCard from './components/address_card';
@@ -17,12 +21,15 @@ const students = [
 ]
 
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   const { user } = await requireAuth({ request });
-  const students = await getStudents({ userId: user.id });
-  const data = await getApplicationData({ userId: user.id });
+  const programId = params.programId;
+  const { students, profile, program } = await getApplicationData({
+    userId: user.id, programId
+  });
 
-  return { user, students, data };
+
+  return { user, students, profile, program };
 };
 
 export async function action({ request }: Route.ActionArgs) {
@@ -51,7 +58,8 @@ export async function action({ request }: Route.ActionArgs) {
 
 
 export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
-  const { user, students, data } = loaderData;
+  const { user, students, profile, program } = loaderData;
+
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -59,21 +67,25 @@ export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
       <div className="divide-y divide-gray-900/50">
         <div className="grid grid-cols-1 gap-x-8 gap-y-8 py-10 md:grid-cols-3">
           <div className="px-4 sm:px-0">
-            <h2 className="text-base/7 font-semibold text-gray-900">Personal Information</h2>
-            <p className="mt-1 text-sm/6 text-gray-600">Use a permanent address where you can receive mail.</p>
+            <h2 className="text-base/7 font-semibold text-gray-900">
+              Applicant Details
+            </h2>
+            <p className="mt-1 text-sm/6 text-gray-600">
+              Use a permanent address.
+            </p>
           </div>
 
           <div className="space-y-4 md:col-span-2">
             <AddressCard
               email={user.email}
-              programName={"user.programName"}
-              firstName={"user.firstName"}
-              lastName={"user.lastName"}
-              street={"user.street"}
-              street2={"user.street2"}
-              city={"user.city"}
-              state={"user.state"}
-              zip={"user.zip"}
+              programName={program?.name ?? "none"}
+              firstName={profile?.firstName ?? ""}
+              lastName={profile?.lastName ?? ""}
+              street={profile?.street ?? ""}
+              street2={profile?.street2 ?? ""}
+              city={profile?.city ?? ""}
+              state={profile?.state ?? ""}
+              zip={profile?.zip ?? ""}
             />
             <EditAddressForm />
           </div>
@@ -99,6 +111,11 @@ export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
             <AddStudentForm />
 
           </div>
+        </div>
+        <div>
+          <pre>
+            {JSON.stringify(profile, null, 2)}
+          </pre>
         </div>
         <div className="grid grid-cols-1 gap-x-8 gap-y-8 py-10 md:grid-cols-3">
           <div className="px-4 sm:px-0">
@@ -367,7 +384,9 @@ function StudentList() {
               className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500"
             >
               <p className="whitespace-nowrap">
-                Added <time dateTime={new Date("10-12-2025").toISOString()}> test time</time>
+                Added <time dateTime={student.createdAt.toISOString()}>
+                  {student.createdAt.toLocaleDateString()}
+                </time>
               </p>
               <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
                 <circle r={1} cx={1} cy={1} />
