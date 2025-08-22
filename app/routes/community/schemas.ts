@@ -16,6 +16,13 @@ export const AddStudentSchema = z.object({
   school: z.string(),
 });
 
+export const ApplicationCheck = z.object({
+  profileCheck: z.literal(true, "Error in Applicant Data"),
+  studentsCheck: z.literal(true, "There must be at least one student"),
+});
+
+export type AddressProfile = z.output<typeof AddressSchema>;
+
 export const ValidApplyIntents = z.object({
   intent: z.enum(["addStudent", "saveAddress"]),
 });

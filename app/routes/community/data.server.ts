@@ -1,5 +1,9 @@
 import { parseWithZod } from "@conform-to/zod/v4";
-import { AddressSchema, AddStudentSchema } from "./schemas";
+import {
+  AddressSchema,
+  AddStudentSchema,
+  type AddressProfile,
+} from "./schemas";
 import { db } from "~/services/db/db.server";
 import {
   applications,
@@ -7,6 +11,7 @@ import {
   programs,
   students,
 } from "~/services/db/schema";
+import { write } from "fs";
 
 const getOpenPrograms = async () => {
   const programs = [
@@ -142,17 +147,18 @@ const getUserWithProfileAndStudents = async (userId: string) => {
   return result;
 };
 
-const submitApplication = async ({
+const writeApplication = async ({
   userId,
   programId,
   profile,
+  email,
 }: {
   userId: string;
   programId: string;
-  profile: any;
+  profile: AddressProfile;
+  email: string;
 }) => {
-  const { firstName, lastName, city, zip, state, street, street2, email } =
-    profile;
+  const { firstName, lastName, city, zip, state, street, street2 } = profile;
 
   await db.insert(applications).values({
     firstName,
@@ -163,8 +169,68 @@ const submitApplication = async ({
     city,
     state,
     zip,
-    email,
     userId,
+    email,
+  });
+};
+
+const checkUserData = async ({ userId }: { userId: string }) => {
+  const data = await getUserWithProfileAndStudents(userId);
+
+  const profile = data?.profiles;
+  const students = data?.students;
+
+  const addressCheck = AddressSchema.safeParse(profile);
+  const studentsCheck = students ? students.length > 0 : false;
+
+  if (!addressCheck.success) {
+    const applicationError = {
+      message: "Please edit the applicant data",
+    };
+    return { applicationError };
+  }
+
+  if (!studentsCheck) {
+    const applicationError = {
+      message: "Please add a student to your profile.",
+    };
+    return { applicationError };
+  }
+
+  return { profile, students, email: data?.email };
+};
+
+const submitApplication = async ({
+  userId,
+  programId,
+  email,
+}: {
+  userId: string;
+  programId: string;
+  email: string;
+}) => {
+  const result = await checkUserData({ userId });
+  const applicationError = result?.applicationError;
+
+  if (applicationError) {
+    return { applicationError };
+  }
+
+  const { profile, students } = result;
+  if (!profile || !students) {
+    throw new Error("Shouldn't happen");
+  }
+
+  const newProfileData = {
+    ...profile,
+    street2: profile?.street2 ?? "",
+  };
+
+  await writeApplication({
+    userId,
+    programId,
+    profile: newProfileData,
+    email,
   });
 };
 
