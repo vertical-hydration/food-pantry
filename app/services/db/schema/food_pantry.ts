@@ -13,6 +13,7 @@ import {
 import { users } from "./auth_schema";
 import { randomUUID } from "crypto";
 import { relations } from "drizzle-orm";
+// ...existing code...
 
 export const foodPantry = pgSchema("food_pantry");
 
@@ -86,7 +87,7 @@ export const profiles = foodPantry.table("profiles", {
 export const applications = foodPantry.table("applications", {
   id: serial().primaryKey(),
   userId: text("user_id").references(() => users.id),
-  programID: integer("program_id").references(() => programs.id),
+  programId: integer("program_id").references(() => programs.id),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   street: text().notNull(),
@@ -97,17 +98,56 @@ export const applications = foodPantry.table("applications", {
   email: text().notNull(),
   status: applicationStatusEnum().default("submitted"),
   acceptedDate: timestamp("accepted_date"),
-  students: json(),
   ...timestamps,
 });
 
+// Join table for normalized many-to-many relationship between applications and students
+export const applicationStudents = foodPantry.table("application_students", {
+  id: serial("id").primaryKey(),
+  applicationId: integer("application_id")
+    .notNull()
+    .references(() => applications.id),
+  studentId: uuid("student_id")
+    .notNull()
+    .references(() => students.id),
+  // Optionally, add timestamps or other metadata here
+  ...timestamps,
+});
+
+//
+// Relations
+//
 export const usersRelations = relations(users, ({ one, many }) => ({
   students: many(students),
+  profiles: one(profiles),
 }));
 
-export const studentsRelations = relations(students, ({ one }) => ({
+export const studentsRelations = relations(students, ({ one, many }) => ({
   user: one(users, {
     fields: [students.userId],
     references: [users.id],
   }),
+  applicationLinks: many(applicationStudents),
 }));
+
+export const profileRelations = relations(profiles, ({ one }) => ({
+  user: one(users, { fields: [profiles.id], references: [users.id] }),
+}));
+
+export const applicationsRelations = relations(applications, ({ many }) => ({
+  studentLinks: many(applicationStudents),
+}));
+
+export const applicationStudentsRelations = relations(
+  applicationStudents,
+  ({ one }) => ({
+    application: one(applications, {
+      fields: [applicationStudents.applicationId],
+      references: [applications.id],
+    }),
+    student: one(students, {
+      fields: [applicationStudents.studentId],
+      references: [students.id],
+    }),
+  })
+);

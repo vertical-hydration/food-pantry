@@ -15,11 +15,21 @@ import { parseWithZod } from "@conform-to/zod/v4"
 import { AddressSchema } from "../schemas"
 import { Form, useFetcher } from "react-router"
 import type { action } from "../program_apply"
+import type z from "zod"
 
-export default function EditAddressForm() {
+type Address = z.infer<typeof AddressSchema>;
+
+
+export default function EditAddressForm({
+  defaultValue
+}: {
+  defaultValue: Address
+}) {
   const [open, setOpen] = useState(false)
   const fetcher = useFetcher<typeof action>();
   const state = fetcher.state;
+
+
 
   const lastAction = fetcher.data
 
@@ -27,7 +37,8 @@ export default function EditAddressForm() {
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: AddressSchema })
     },
-    lastResult: lastAction,
+    lastResult: fetcher.state === 'idle' ? lastAction : null,
+    defaultValue
   })
 
   useEffect(() => {
@@ -90,7 +101,7 @@ export default function EditAddressForm() {
                         label={"Last Name"}
                         id={fields.lastName.id}
                         name={fields.lastName.name}
-                        defaultValue={fields.lastName.defaultValue}
+                        defaultValue={fields.lastName.initialValue}
                         errors={fields.lastName.errors}
                         autoComplete={fields.lastName.id}
                       />
@@ -98,7 +109,7 @@ export default function EditAddressForm() {
                         label={"Apartment/Unit"}
                         id={fields.street2.id}
                         name={fields.street2.name}
-                        defaultValue={fields.street2.defaultValue}
+                        defaultValue={fields.street2.initialValue}
                         errors={fields.street2.errors}
                         autoComplete={fields.street2.id}
                       />
@@ -140,7 +151,7 @@ export default function EditAddressForm() {
                   <pre>
                     {JSON.stringify(form.allErrors, null, 2)}
                     <br />
-                    {JSON.stringify(lastAction, null, 2)}
+                    {JSON.stringify(defaultValue, null, 2)}
                   </pre>
                 </div>
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">

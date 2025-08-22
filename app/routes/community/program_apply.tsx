@@ -3,10 +3,11 @@ import { requireAuth } from '~/services/auth/auth_utils.server'
 import type { Route } from './+types/program_apply'
 import { ValidApplyIntents } from './schemas';
 import { parseWithZod } from '@conform-to/zod/v4';
-import { Form, useLoaderData, useRouteLoaderData } from 'react-router';
+import { Form, useLoaderData, } from 'react-router';
 import {
   addStudent,
-  getApplicationData,
+  getProgram,
+  getUserWithProfileAndStudents,
   saveProfileAddress
 } from './data.server';
 import AddStudentForm from './components/add_student_form';
@@ -14,22 +15,31 @@ import EditAddressForm from './components/edit_address_form';
 import AddressCard from './components/address_card';
 
 
-const students = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', school: 'Example High School' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', school: 'Example High School' },
-  { id: 3, name: 'Alice Johnson', email: 'alice@example.com', school: 'Example High School' }
-]
+
 
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { user } = await requireAuth({ request });
   const programId = params.programId;
-  const { students, profile, program } = await getApplicationData({
-    userId: user.id, programId
-  });
+  const program = await getProgram({ programId });
+  if (!program) {
+    throw new Error('Program not found');
+  }
 
+  const userProfileData = await getUserWithProfileAndStudents(user.id);
+  const profile = userProfileData?.profiles;
 
-  return { user, students, profile, program };
+  const defaultValue = {
+    firstName: profile?.firstName ?? '',
+    lastName: profile?.lastName ?? '',
+    street: profile?.street ?? '',
+    street2: profile?.street2 ?? '',
+    city: profile?.city ?? '',
+    state: profile?.state ?? '',
+    zip: profile?.zip ?? '',
+  }
+
+  return { user, program, userProfileData, defaultValue };
 };
 
 export async function action({ request }: Route.ActionArgs) {
@@ -58,7 +68,10 @@ export async function action({ request }: Route.ActionArgs) {
 
 
 export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
-  const { user, students, profile, program } = loaderData;
+  const { user, program, userProfileData, defaultValue } = loaderData;
+
+  const profile = userProfileData?.profiles;
+  const students = userProfileData?.students;
 
 
   return (
@@ -76,18 +89,25 @@ export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
           </div>
 
           <div className="space-y-4 md:col-span-2">
-            <AddressCard
-              email={user.email}
-              programName={program?.name ?? "none"}
-              firstName={profile?.firstName ?? ""}
-              lastName={profile?.lastName ?? ""}
-              street={profile?.street ?? ""}
-              street2={profile?.street2 ?? ""}
-              city={profile?.city ?? ""}
-              state={profile?.state ?? ""}
-              zip={profile?.zip ?? ""}
-            />
-            <EditAddressForm />
+            {
+              profile ?
+
+                <AddressCard
+                  email={user.email}
+                  programName={program?.name ?? "none"}
+                  firstName={profile.firstName}
+                  lastName={profile.lastName}
+                  street={profile.street}
+                  street2={profile.street2 ?? ''}
+                  city={profile.city}
+                  state={profile.state}
+                  zip={profile.zip}
+                />
+                : <div>
+                  <p>No address information available.</p>
+                </div>
+            }
+            <EditAddressForm defaultValue={defaultValue} />
           </div>
           {/* <ProfileForm /> */}
         </div>
@@ -364,9 +384,11 @@ function AddStudentCard() {
 
 
 function StudentList() {
-  const { students } = useLoaderData<typeof loader>();
+  const { userProfileData } = useLoaderData<typeof loader>();
 
-  if (students.length === 0) {
+  const students = userProfileData?.students;
+
+  if (!students || students.length === 0) {
     return <EmptyState />
   }
 

@@ -29,6 +29,13 @@
       "when": 1755791260550,
       "tag": "0003_old_retro_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1755806375155,
+      "tag": "0004_stiff_pestilence",
+      "breakpoints": true
     }
   ]
 }
