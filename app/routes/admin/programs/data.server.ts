@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "~/services/db/db.server";
-import { programs } from "~/services/db/schema";
+import { applications, programs } from "~/services/db/schema";
 import { AddProgramSchema } from "./schemas";
 import { parseWithZod } from "@conform-to/zod/v4";
 import { redirect } from "react-router";
@@ -33,4 +33,15 @@ const addProgram = async ({ formData }: { formData: FormData }) => {
   return redirect("/admin/programs");
 };
 
-export { getPrograms, getProgram, addProgram };
+const getProgramApplications = async (programId: number) => {
+  const data = await db.query.programs.findFirst({
+    where: (programs, { eq }) => eq(programs.id, programId),
+    with: {
+      applications: true,
+    },
+  });
+
+  return data;
+};
+
+export { getPrograms, getProgram, addProgram, getProgramApplications };

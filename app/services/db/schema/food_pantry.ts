@@ -134,9 +134,16 @@ export const profileRelations = relations(profiles, ({ one }) => ({
   user: one(users, { fields: [profiles.id], references: [users.id] }),
 }));
 
-export const applicationsRelations = relations(applications, ({ many }) => ({
-  studentLinks: many(applicationStudents),
-}));
+export const applicationsRelations = relations(
+  applications,
+  ({ one, many }) => ({
+    studentLinks: many(applicationStudents),
+    program: one(programs, {
+      fields: [applications.programId],
+      references: [programs.id],
+    }),
+  })
+);
 
 export const applicationStudentsRelations = relations(
   applicationStudents,
@@ -151,3 +158,7 @@ export const applicationStudentsRelations = relations(
     }),
   })
 );
+
+export const programsRelations = relations(programs, ({ many }) => ({
+  applications: many(applications),
+}));
