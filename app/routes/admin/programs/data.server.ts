@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "~/services/db/db.server";
 import { applications, programs } from "~/services/db/schema";
-import { AddProgramSchema } from "./schemas";
+import { AddProgramSchema, ChangeStatusSchema } from "./schemas";
 import { parseWithZod } from "@conform-to/zod/v4";
 import { redirect } from "react-router";
 
@@ -44,4 +44,61 @@ const getProgramApplications = async (programId: number) => {
   return data;
 };
 
-export { getPrograms, getProgram, addProgram, getProgramApplications };
+const getApplicationData = async (applicationId: number) => {
+  const data = await db.query.applications.findFirst({
+    where: (applications, { eq }) => eq(applications.id, applicationId),
+    with: {
+      studentLinks: {
+        with: {
+          student: true,
+        },
+      },
+    },
+  });
+
+  if (!data) {
+    throw new Error(" No Application with that id");
+  }
+
+  const { studentLinks, ...application } = data;
+
+  const students = studentLinks.map((link) => link.student);
+
+  return {
+    application,
+    students,
+  };
+};
+
+const updateApplicationStatus = async ({
+  aid,
+  formData,
+}: {
+  aid: number;
+  // newStatus: "submitted" | "accepted" | "waitlist" | "declined";
+  formData: FormData;
+}) => {
+  const submission = parseWithZod(formData, { schema: ChangeStatusSchema });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const { newStatus } = submission.value;
+
+  await db
+    .update(applications)
+    .set({ status: newStatus })
+    .where(eq(applications.id, aid));
+
+  return submission.reply();
+};
+
+export {
+  getPrograms,
+  getProgram,
+  addProgram,
+  getProgramApplications,
+  getApplicationData,
+  updateApplicationStatus,
+};

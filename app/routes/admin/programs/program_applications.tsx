@@ -2,7 +2,7 @@ import { requireSettingsView } from "~/services/auth/auth_utils.server";
 import type { Route } from "./+types/program_dashboard";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { getProgramApplications } from "./data.server";
-import { useLoaderData } from "react-router";
+import { Link, useLoaderData } from "react-router";
 
 
 
@@ -85,15 +85,23 @@ function ApplicationList() {
               </p>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-x-4">
+          <Link to={application.id.toString()}
+            className="flex shrink-0 items-center gap-x-4"
+          >
             <div className="hidden sm:flex sm:flex-col sm:items-end">
               <p className="text-sm/6 text-gray-900">{application.status}</p>
 
             </div>
             <ChevronRightIcon aria-hidden="true" className="size-5 flex-none text-gray-400" />
-          </div>
+          </Link>
         </li>
       ))}
     </ul>
   )
+}
+
+
+function ApplicationsDataTable() {
+
+
 }
