@@ -3,12 +3,13 @@ import { requireAuth } from '~/services/auth/auth_utils.server'
 import type { Route } from './+types/program_apply'
 import { ValidApplyIntents } from './schemas';
 import { parseWithZod } from '@conform-to/zod/v4';
-import { Form, useLoaderData, } from 'react-router';
+import { Form, redirect, useLoaderData, } from 'react-router';
 import {
   addStudent,
   getProgram,
   getUserWithProfileAndStudents,
-  saveProfileAddress
+  saveProfileAddress,
+  submitApplication
 } from './data.server';
 import AddStudentForm from './components/add_student_form';
 import EditAddressForm from './components/edit_address_form';
@@ -42,8 +43,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return { user, program, userProfileData, defaultValue };
 };
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, params }: Route.ActionArgs) {
   const { user } = await requireAuth({ request });
+  const programId = params.programId;
 
   const formData = await request.formData();
 
@@ -57,6 +59,13 @@ export async function action({ request }: Route.ActionArgs) {
     // Handle adding a student
 
     return await addStudent({ formData, userId: user.id });
+  }
+
+  if (intent === 'submitApplication') {
+
+    await submitApplication({ userId: user.id, programId, email: user.email });
+
+    return redirect('/community/programs')
   }
 
   const submission = parseWithZod(formData, { schema: ValidApplyIntents });
@@ -147,19 +156,21 @@ export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
             </p>
           </div>
 
-          <form className="bg-white shadow-xs outline outline-gray-900/5 sm:rounded-xl md:col-span-2">
+          <Form method='POST' className="bg-white shadow-xs outline outline-gray-900/5 sm:rounded-xl md:col-span-2">
 
 
 
             <div className="mt-6">
               <button
                 type="submit"
+                name="intent"
+                value="submitApplication"
                 className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-xs hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 focus:outline-hidden"
               >
                 Submit Application
               </button>
             </div>
-          </form>
+          </Form>
         </div>
       </div>
     </div>

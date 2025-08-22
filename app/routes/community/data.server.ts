@@ -7,6 +7,7 @@ import {
 import { db } from "~/services/db/db.server";
 import {
   applications,
+  applicationStudents,
   profiles,
   programs,
   students,
@@ -160,18 +161,23 @@ const writeApplication = async ({
 }) => {
   const { firstName, lastName, city, zip, state, street, street2 } = profile;
 
-  await db.insert(applications).values({
-    firstName,
-    lastName,
-    programId: Number(programId),
-    street,
-    street2,
-    city,
-    state,
-    zip,
-    userId,
-    email,
-  });
+  return await db
+    .insert(applications)
+    .values({
+      firstName,
+      lastName,
+      programId: Number(programId),
+      street,
+      street2,
+      city,
+      state,
+      zip,
+      userId,
+      email,
+    })
+    .returning({
+      applicationId: applications.id,
+    });
 };
 
 const checkUserData = async ({ userId }: { userId: string }) => {
@@ -226,12 +232,19 @@ const submitApplication = async ({
     street2: profile?.street2 ?? "",
   };
 
-  await writeApplication({
+  const writeApp = await writeApplication({
     userId,
     programId,
     profile: newProfileData,
     email,
   });
+
+  const studentArray = students.map((student) => ({
+    applicationId: writeApp[0].applicationId,
+    studentId: student.id,
+  }));
+
+  return await db.insert(applicationStudents).values(studentArray);
 };
 
 export {
@@ -242,4 +255,5 @@ export {
   getApplicationData,
   getUserWithProfileAndStudents,
   getProgram,
+  submitApplication,
 };
