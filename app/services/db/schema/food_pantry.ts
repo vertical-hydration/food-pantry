@@ -120,6 +120,7 @@ export const applicationStudents = foodPantry.table("application_students", {
 export const usersRelations = relations(users, ({ one, many }) => ({
   students: many(students),
   profiles: one(profiles),
+  applications: many(applications),
 }));
 
 export const studentsRelations = relations(students, ({ one, many }) => ({
@@ -141,6 +142,10 @@ export const applicationsRelations = relations(
     program: one(programs, {
       fields: [applications.programId],
       references: [programs.id],
+    }),
+    user: one(users, {
+      fields: [applications.userId],
+      references: [users.id],
     }),
   })
 );

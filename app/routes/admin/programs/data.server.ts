@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "~/services/db/db.server";
 import { applications, programs } from "~/services/db/schema";
 import { AddProgramSchema, ChangeStatusSchema } from "./schemas";
@@ -92,6 +92,18 @@ const updateApplicationStatus = async ({
     .where(eq(applications.id, aid));
 
   return submission.reply();
+};
+
+const getProgramEnrollment = async ({ programId }: { programId: string }) => {
+  const data = await db
+    .select()
+    .from(applications)
+    .where(
+      and(
+        eq(applications.programId, Number(programId)),
+        eq(applications.status, "accepted")
+      )
+    );
 };
 
 export {

@@ -17,8 +17,14 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   const tabs = [
     {
-      name: 'Enrollment',
+      name: 'Dashboard',
       to: `/admin/programs/${pid}`,
+      count: '52',
+      end: true
+    },
+    {
+      name: 'Enrollment',
+      to: `/admin/programs/${pid}/enrollment`,
       count: '52',
       end: true
     },

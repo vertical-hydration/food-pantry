@@ -35,6 +35,7 @@ export default [
         ...prefix(":programId", [
           layout("routes/admin/programs/program_layout.tsx", [
             index("routes/admin/programs/program_dashboard.tsx"),
+            route("enrollment", "routes/admin/programs/program_enrollment.tsx"),
             ...prefix("applications", [
               index("routes/admin/programs/program_applications.tsx"),
               route(":applId", "routes/admin/programs/application_approve.tsx"),
