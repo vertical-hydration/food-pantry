@@ -2,6 +2,10 @@ import type { Route } from "./+types/program_dashboard";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 import { UserImage } from "~/components/user_image";
+import { enrolleeColumns, EnrollmentTable, type Enrollee, } from "./program_tables";
+import { mockEnrollees } from "./mockData";
+import { useRouteLoaderData } from "react-router";
+import type { Route as ProgramRoute } from "./+types/program_layout"
 
 
 
@@ -10,8 +14,26 @@ export async function loader() {
   return {}
 }
 
-export default function ProgramEnrollment({ loaderData }: Route.ComponentProps) {
+export default function ProgramEnrollment(
+  { loaderData }: Route.ComponentProps
+) {
 
+  const data = useRouteLoaderData<ProgramRoute.ComponentProps["loaderData"]>("programId");
+
+  const applications = data?.applications ?? [];
+
+  const enrolled = applications.filter(a => a.status === "accepted");
+
+  const tableData: Enrollee[] = enrolled.map(a => ({
+    id: a.id.toString(),
+    firstName: a.firstName,
+    lastName: a.lastName,
+    email: a.email,
+    status: a.status,
+    enrollmentDate: a.acceptedDate?.toDateString() ?? "No Date",
+    appliedDate: a.createdAt.toDateString() ?? "No Date",
+    image: "",
+  }));
 
   return <div>
     <div className="border-b border-gray-200 py-5">
@@ -22,7 +44,7 @@ export default function ProgramEnrollment({ loaderData }: Route.ComponentProps) 
         Users who have enrolled in this program will be listed here. You can review their applications and take necessary actions.
       </p>
     </div>
-    <EnrollmentList />
+    <EnrollmentTable columns={enrolleeColumns} data={mockEnrollees} />
   </div>;
 
 }

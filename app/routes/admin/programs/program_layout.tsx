@@ -17,9 +17,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   }
 
   const applications = program.applications;
-
   const enrolled = applications.filter(a => a.status === "accepted");
-
   const studentLinks = enrolled.flatMap(a => a.studentLinks);
 
 
@@ -32,7 +30,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   ]
 
 
-  return { program, stats };
+  return { program, stats, applications };
 }
 
 export async function action({ request }: Route.ActionArgs) {
