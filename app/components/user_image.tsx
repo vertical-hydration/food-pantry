@@ -5,7 +5,8 @@ import { UserIcon } from "@heroicons/react/24/outline";
 
 export function UserImage({
   src,
-}: { src: string; }) {
+
+}: { src?: string; }) {
 
   const user = { image: src }; // Mock user object
 

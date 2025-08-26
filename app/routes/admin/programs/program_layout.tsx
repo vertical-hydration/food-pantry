@@ -2,47 +2,37 @@ import { data, Link, NavLink, Outlet, redirect, useLoaderData } from "react-rout
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import type { Route } from "./+types/program_layout";
 import clsx from "clsx";
-import { getProgram } from "./data.server";
+import { getProgramData } from "./data.server";
+import { en } from "zod/v4/locales";
 
 
 
 
 export async function loader({ params }: Route.LoaderArgs) {
   const pid = params.programId;
-  const program = await getProgram({ pid: Number(pid) });
+  const program = await getProgramData({ pid: Number(pid) });
 
   if (!program) {
     throw data(null, { status: 404, statusText: "Program not found" });
   }
 
-  const tabs = [
-    {
-      name: 'Dashboard',
-      to: `/admin/programs/${pid}`,
-      count: '52',
-      end: true
-    },
-    {
-      name: 'Enrollment',
-      to: `/admin/programs/${pid}/enrollment`,
-      count: '52',
-      end: true
-    },
-    {
-      name: 'Applications',
-      to: `/admin/programs/${pid}/applications`,
-      count: '6',
-      end: false
-    },
-    {
-      name: 'Events',
-      to: `/admin/programs/${pid}/events`,
-      count: '4',
-      end: false
-    }
+  const applications = program.applications;
+
+  const enrolled = applications.filter(a => a.status === "accepted");
+
+  const studentLinks = enrolled.flatMap(a => a.studentLinks);
+
+
+
+  const stats = [
+    { name: 'Enrollment', value: enrolled.length.toString() },
+    { name: 'Total Applications', value: applications.length.toString(), unit: 'Applied' },
+    { name: 'Students Enrolled', value: studentLinks.length.toString() },
+    { name: 'Success rate', value: '98.5%' },
   ]
 
-  return { tabs, program };
+
+  return { program, stats };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -52,15 +42,15 @@ export async function action({ request }: Route.ActionArgs) {
   return null;
 }
 
-export default function ProgramLayout({ loaderData }: Route.ComponentProps) {
-  const { tabs } = loaderData;
+export default function ProgramLayout({ loaderData, params }: Route.ComponentProps) {
+  const { program } = loaderData;
+  const pid = params.programId;
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <PageHeader />
-      <NavTabs tabs={tabs} />
+      <NavTabs pid={pid} />
       <Outlet />
-
     </div>
   )
 
@@ -94,8 +84,42 @@ function PageHeader() {
 }
 
 
+type Tab = {
+  name: string;
+  to: string;
+  count?: string;
+  end: boolean;
+};
 
-function NavTabs({ tabs }: { tabs: { name: string; to: string; count?: string; end: boolean }[] }) {
+function NavTabs({ pid }: { pid: string }) {
+
+
+  const tabs: Tab[] = [
+    {
+      name: 'Dashboard',
+      to: `/admin/programs/${pid}`,
+      // count: '52',
+      end: true
+    },
+    {
+      name: 'Enrollment',
+      to: `/admin/programs/${pid}/enrollment`,
+      // count: '52',
+      end: true
+    },
+    {
+      name: 'Applications',
+      to: `/admin/programs/${pid}/applications`,
+      // count: '6',
+      end: false
+    },
+    {
+      name: 'Events',
+      to: `/admin/programs/${pid}/events`,
+      // count: '4',
+      end: false
+    }
+  ]
   return (
     <div>
       <div className="grid grid-cols-1 sm:hidden">

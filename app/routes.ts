@@ -32,18 +32,21 @@ export default [
       ...prefix("programs", [
         index("routes/admin/programs/prog_index.tsx"),
         route("create", "routes/admin/programs/add_program.tsx"),
-        ...prefix(":programId", [
-          layout("routes/admin/programs/program_layout.tsx", [
+        route(
+          ":programId",
+          "routes/admin/programs/program_layout.tsx",
+          { id: "programId" },
+          [
             index("routes/admin/programs/program_dashboard.tsx"),
             route("enrollment", "routes/admin/programs/program_enrollment.tsx"),
             ...prefix("applications", [
               index("routes/admin/programs/program_applications.tsx"),
               route(":applId", "routes/admin/programs/application_approve.tsx"),
             ]),
-          ]),
-        ]),
+            route("events", "routes/admin/events/events_index.tsx"),
+          ]
+        ),
       ]),
-      ...prefix("events", [index("routes/admin/events/events_index.tsx")]),
     ]),
   ]),
 ] satisfies RouteConfig;

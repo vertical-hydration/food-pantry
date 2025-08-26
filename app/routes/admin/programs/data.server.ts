@@ -13,9 +13,17 @@ const getPrograms = async () => {
   return data;
 };
 
-const getProgram = async ({ pid }: { pid: number }) => {
+const getProgramData = async ({ pid }: { pid: number }) => {
   return await db.query.programs.findFirst({
     where: (programs, { eq }) => eq(programs.id, pid),
+    with: {
+      applications: {
+        with: {
+          user: true,
+          studentLinks: true,
+        },
+      },
+    },
   });
 };
 
@@ -108,7 +116,7 @@ const getProgramEnrollment = async ({ programId }: { programId: string }) => {
 
 export {
   getPrograms,
-  getProgram,
+  getProgramData,
   addProgram,
   getProgramApplications,
   getApplicationData,

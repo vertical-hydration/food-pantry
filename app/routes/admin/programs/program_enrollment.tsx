@@ -56,9 +56,9 @@ function EnrollmentList() {
                 </span>
               </p>
               <p className="mt-1 flex text-xs/5 text-gray-500">
-                <p className="truncate hover:underline">
+                <span className="truncate hover:underline">
                   Applied {person.applied}
-                </p>
+                </span>
               </p>
             </div>
           </div>
@@ -68,9 +68,8 @@ function EnrollmentList() {
                 {person.status}
               </p>
               <p className="mt-1 text-xs/5 text-gray-500">
-                Enrollment Date <time dateTime={person.enrollment}>
-                  {person.enrollment}
-                </time>
+                Enrollment Date
+                {person.enrollment}
               </p>
             </div>
             <Menu as="div" className="relative flex-none">

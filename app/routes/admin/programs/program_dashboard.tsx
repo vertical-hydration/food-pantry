@@ -1,6 +1,8 @@
 import type { Route } from "./+types/program_dashboard";
+import type { Route as ProgramRoute } from "./+types/program_layout"
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
+import { useRouteLoaderData } from "react-router";
 import { UserImage } from "~/components/user_image";
 
 
@@ -11,7 +13,9 @@ export async function loader() {
 }
 
 export default function ProgramDashboard({ loaderData }: Route.ComponentProps) {
+  const data = useRouteLoaderData<ProgramRoute.ComponentProps["loaderData"]>("programId");
 
+  const stats = data ? data.stats : [];
 
   return <div>
     <div className="border-b border-gray-200 py-5">
@@ -22,18 +26,18 @@ export default function ProgramDashboard({ loaderData }: Route.ComponentProps) {
         Display data
       </p>
     </div>
-    <DataDisplay />
+    <DataDisplay stats={stats} />
+    <pre>
+      {JSON.stringify(data, null, 2)}
+    </pre>
   </div>;
 
 }
 
-const stats = [
-  { name: 'Number of deploys', value: '405' },
-  { name: 'Average deploy time', value: '3.65', unit: 'mins' },
-  { name: 'Number of servers', value: '3' },
-  { name: 'Success rate', value: '98.5%' },
-]
-function DataDisplay() {
+
+function DataDisplay({ stats }: { stats: Array<{ name: string, value: string, unit?: string }> }) {
+
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-7xl">

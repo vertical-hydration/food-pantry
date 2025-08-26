@@ -49,7 +49,7 @@ const timestamps = {
 export const programs = foodPantry.table("programs", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().default("program"),
-  status: programStatusEnum().default("inactive"),
+  status: programStatusEnum().default("inactive").notNull(),
   ...timestamps,
 });
 
@@ -86,8 +86,12 @@ export const profiles = foodPantry.table("profiles", {
 
 export const applications = foodPantry.table("applications", {
   id: serial().primaryKey(),
-  userId: text("user_id").references(() => users.id),
-  programId: integer("program_id").references(() => programs.id),
+  userId: text("user_id")
+    .references(() => users.id)
+    .notNull(),
+  programId: integer("program_id")
+    .references(() => programs.id)
+    .notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   street: text().notNull(),
@@ -96,7 +100,7 @@ export const applications = foodPantry.table("applications", {
   state: text().notNull(),
   zip: text().notNull(),
   email: text().notNull(),
-  status: applicationStatusEnum().default("submitted"),
+  status: applicationStatusEnum().default("submitted").notNull(),
   acceptedDate: timestamp("accepted_date"),
   ...timestamps,
 });
