@@ -24,14 +24,14 @@ import {
   TableRow,
 } from "~/components/table"
 
-
+type StatusType = "submitted" | "accepted" | "waitlist" | "declined";
 
 export type Enrollee = {
   id: string,
   firstName: string,
   lastName: string,
   email: string,
-  status: string,
+  status: StatusType,
   enrollmentDate: string,
   appliedDate: string,
   image: string,
@@ -223,8 +223,9 @@ function Filter({ column }: { column: Column<any, unknown> }) {
   >
     {/* See faceted column filters example for dynamic select options */}
     <option value="">All</option>
-    <option value="enrolled">enrolled</option>
-    <option value="pending">pending</option>
-    <option value="failed">failed</option>
+    <option value="accepted">Accepted</option>
+    <option value="submitted">Submitted</option>
+    <option value="waitlist">Waitlist</option>
+    <option value="declined">Declined</option>
   </select>
 }

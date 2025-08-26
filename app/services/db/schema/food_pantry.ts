@@ -170,4 +170,12 @@ export const applicationStudentsRelations = relations(
 
 export const programsRelations = relations(programs, ({ many }) => ({
   applications: many(applications),
+  events: many(events),
+}));
+
+export const eventRelations = relations(events, ({ many, one }) => ({
+  programs: one(programs, {
+    fields: [events.programId],
+    references: [programs.id],
+  }),
 }));

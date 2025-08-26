@@ -10,7 +10,7 @@ import {
   getUserWithProfileAndStudents,
   saveProfileAddress,
   submitApplication
-} from './data.server';
+} from './community.server';
 import AddStudentForm from './components/add_student_form';
 import EditAddressForm from './components/edit_address_form';
 import AddressCard from './components/address_card';

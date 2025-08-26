@@ -1,7 +1,7 @@
 
 import { Link } from "react-router";
 import type { Route } from "./+types/programs";
-import { getOpenPrograms } from "./data.server";
+import { getOpenPrograms } from "./community.server";
 
 
 export async function loader({ request }: Route.LoaderArgs) {

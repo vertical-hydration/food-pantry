@@ -1,8 +1,10 @@
+import { requireAuth } from "~/services/auth/auth_utils.server";
 import type { Route } from "./+types/home";
-import { getOpenPrograms } from "./data.server";
+import { getOpenPrograms } from "./community.server";
 
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const { user } = await requireAuth({ request });
 
   const programs = await getOpenPrograms();
 

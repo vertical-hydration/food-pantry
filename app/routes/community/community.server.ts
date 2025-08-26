@@ -247,6 +247,8 @@ const submitApplication = async ({
   return await db.insert(applicationStudents).values(studentArray);
 };
 
+const getEventsOpenToUser = async ({ userId }: { userId: string }) => {};
+
 export {
   getOpenPrograms,
   saveProfileAddress,
