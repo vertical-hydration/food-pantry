@@ -5,17 +5,6 @@ import { getEvents } from "./data.server";
 
 
 
-const events = [
-  {
-    id: 1,
-    name: 'Oct 5 Pickup Event',
-    description: 'Users must pick up their food boxes on the designated days.',
-    status: 'Active',
-    date: new Date('2025-10-05'),
-    programName: 'Food Box Pickup'
-  },
-
-]
 
 
 export async function loader() {

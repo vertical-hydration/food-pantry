@@ -44,6 +44,7 @@ export default [
               route(":applId", "routes/admin/programs/application_approve.tsx"),
             ]),
             route("events", "routes/admin/events/events_index.tsx"),
+            route("events/create", "routes/admin/events/create_events.tsx"),
           ]
         ),
       ]),
