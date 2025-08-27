@@ -11,8 +11,10 @@ import {
   useReactTable,
   getFilteredRowModel,
   getPaginationRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
 } from "@tanstack/react-table"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Link } from "react-router"
 
 import {
@@ -115,6 +117,8 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(), // client-side faceting
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     getPaginationRowModel: getPaginationRowModel(),
     state: {
       sorting,
@@ -215,17 +219,25 @@ export function DataTable<TData, TValue>({
 
 function Filter({ column }: { column: Column<any, unknown> }) {
   const columnFilterValue = column.getFilterValue()
-  // const { filterVariant } = column.columnDef.meta ?? {}
+  const sortedUniqueValues = useMemo(
+    () =>
+      Array.from(column.getFacetedUniqueValues().keys())
+        .sort()
+        .slice(0, 5000),
+    [column.getFacetedUniqueValues()]
+  )
 
   return <select
     onChange={e => column.setFilterValue(e.target.value)}
     value={columnFilterValue?.toString()}
   >
-    {/* See faceted column filters example for dynamic select options */}
     <option value="">All</option>
-    <option value="accepted">Accepted</option>
-    <option value="submitted">Submitted</option>
-    <option value="waitlist">Waitlist</option>
-    <option value="declined">Declined</option>
+    {/* See faceted column filters example for dynamic select options */}
+    {sortedUniqueValues.map(value => (
+      //dynamically generated select options from faceted values feature
+      <option value={value} key={value}>
+        {value}
+      </option>
+    ))}
   </select>
 }

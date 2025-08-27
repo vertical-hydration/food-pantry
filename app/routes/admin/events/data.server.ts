@@ -5,6 +5,7 @@ import { NewEventSchema } from "./schemas";
 import { redirect } from "react-router";
 import { write } from "fs";
 import { eq } from "drizzle-orm";
+import { mockReservations } from "~/components/events/mockReservaitons";
 
 const getEvents = async () => {
   const events = await db.query.events.findMany({});
@@ -12,7 +13,11 @@ const getEvents = async () => {
   return { events };
 };
 
-const createEvent = async ({ formData }: { formData: FormData }) => {
+const createEvent = async ({
+  formData,
+}: {
+  formData: FormData;
+}) => {
   const submission = parseWithZod(formData, {
     schema: NewEventSchema,
   });
@@ -47,7 +52,12 @@ const getEvent = async (eventId: number) => {
 };
 
 const getReservations = async (eventId: Number) => {
-  return [];
+  return mockReservations;
 };
 
-export { getEvent, getEvents, createEvent, getReservations };
+export {
+  getEvent,
+  getEvents,
+  createEvent,
+  getReservations,
+};
