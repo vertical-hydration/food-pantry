@@ -1,6 +1,10 @@
+// import type { Route } from "./+types/events_index";
+// import { getEvents } from "./data.server";
+
+import type { Route } from "./+types/program_events";
+import { getEvents } from "../events/data.server";
+import { Link } from "react-router";
 import { EventsTable } from "~/components/events/eventsTable";
-import type { Route } from "./+types/events_index";
-import { getEvents } from "./data.server";
 
 
 
@@ -45,3 +49,5 @@ export default function EventsIndex({ loaderData }: Route.ComponentProps) {
     </div>
   )
 }
+
+

@@ -43,9 +43,18 @@ export default [
               index("routes/admin/programs/program_applications.tsx"),
               route(":applId", "routes/admin/programs/application_approve.tsx"),
             ]),
-            route("events", "routes/admin/events/events_index.tsx"),
+            route("events", "routes/admin/programs/program_events.tsx"),
             route("events/create", "routes/admin/events/create_events.tsx"),
           ]
+        ),
+      ]),
+      ...prefix("events", [
+        index("routes/admin/events/events_index.tsx"),
+        route(
+          ":eventId",
+          "routes/admin/events/event_layout.tsx",
+          { id: "eventId" },
+          [index("routes/admin/events/event_dashboard.tsx")]
         ),
       ]),
     ]),
