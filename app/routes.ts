@@ -53,8 +53,13 @@ export default [
         route(
           ":eventId",
           "routes/admin/events/event_layout.tsx",
-          { id: "eventId" },
-          [index("routes/admin/events/event_dashboard.tsx")]
+          {
+            id: "eventId",
+          },
+          [
+            index("routes/admin/events/event_dashboard.tsx"),
+            route("reservations", "routes/admin/events/event_reservations.tsx"),
+          ]
         ),
       ]),
     ]),

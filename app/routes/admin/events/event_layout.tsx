@@ -2,7 +2,7 @@ import { desc } from "drizzle-orm";
 import { Outlet } from "react-router";
 import { NavTabs, PageHeader, type Tab } from "~/components/site/headers";
 import type { Route } from "./+types/event_layout";
-import { getEvent } from "./data.server";
+import { getEvent, getReservations } from "./data.server";
 
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -38,7 +38,9 @@ export async function loader({ params }: Route.LoaderArgs) {
     { name: 'Success rate', value: '98.5%' },
   ]
 
-  return { tabs, info, stats }
+  const reservations = await getReservations(eventId)
+
+  return { tabs, info, stats, reservations }
 }
 
 

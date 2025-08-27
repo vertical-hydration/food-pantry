@@ -46,4 +46,8 @@ const getEvent = async (eventId: number) => {
   return event;
 };
 
-export { getEvent, getEvents, createEvent };
+const getReservations = async (eventId: Number) => {
+  return [];
+};
+
+export { getEvent, getEvents, createEvent, getReservations };
