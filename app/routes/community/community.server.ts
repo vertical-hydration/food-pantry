@@ -13,6 +13,7 @@ import {
   students,
 } from "~/services/db/schema";
 import { write } from "fs";
+import { and } from "drizzle-orm";
 
 const getOpenPrograms = async () => {
   const programs = [
@@ -247,7 +248,35 @@ const submitApplication = async ({
   return await db.insert(applicationStudents).values(studentArray);
 };
 
-const getEventsOpenToUser = async ({ userId }: { userId: string }) => {};
+const getEventsOpenToUser = async ({ userId }: { userId: string }) => {
+  // const data = await db.query.programs.findMany({
+  //   with: {
+  //     applications: {
+  //       where: (applications, { eq }) =>
+  //         and(
+  //           eq(applications.userId, userId),
+  //           eq(applications.status, "accepted")
+  //         ),
+  //     },
+  //   },
+  // });
+
+  const applicationData = await db.query.applications.findMany({
+    where: (applications, { eq }) =>
+      and(eq(applications.userId, userId), eq(applications.status, "accepted")),
+    with: {
+      program: {
+        with: {
+          events: {
+            where: (events, { eq }) => eq(events.status, "active"),
+          },
+        },
+      },
+    },
+  });
+
+  return { applicationData };
+};
 
 export {
   getOpenPrograms,
@@ -258,4 +287,5 @@ export {
   getUserWithProfileAndStudents,
   getProgram,
   submitApplication,
+  getEventsOpenToUser,
 };

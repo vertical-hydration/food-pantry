@@ -1,19 +1,19 @@
 import { requireAuth } from "~/services/auth/auth_utils.server";
 import type { Route } from "./+types/home";
-import { getOpenPrograms } from "./community.server";
+import { getEventsOpenToUser, } from "./community.server";
 
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { user } = await requireAuth({ request });
 
-  const programs = await getOpenPrograms();
+  const data = await getEventsOpenToUser({ userId: user.id });
 
-  return { programs };
+  return { data };
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { programs } = loaderData;
-  const eventList = programs.programs;
+  const { data } = loaderData;
+
 
   return (
     <main>
@@ -25,7 +25,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         </div>
       </header>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
+        <h3>Program Data</h3>
+        <pre>
+          {JSON.stringify(data, null, 2)}
+        </pre>
       </div>
     </main>
   );
