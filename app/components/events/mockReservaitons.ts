@@ -1,10 +1,14 @@
-type Reservation = {
+export type Reservation = {
   id: string;
   userId: string;
   firstName: string;
   lastName: string;
   eventId: string;
-  status: "pending" | "confirmed" | "cancelled";
+  status:
+    | "pending"
+    | "confirmed"
+    | "cancelled"
+    | "waitlist";
   createdAt: Date;
 };
 

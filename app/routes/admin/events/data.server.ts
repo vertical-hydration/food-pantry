@@ -1,11 +1,14 @@
 import { parseWithZod } from "@conform-to/zod/v4";
 import { db } from "~/services/db/db.server";
-import { events } from "~/services/db/schema";
+import { events, reservations } from "~/services/db/schema";
 import { NewEventSchema } from "./schemas";
 import { redirect } from "react-router";
 import { write } from "fs";
 import { eq } from "drizzle-orm";
-import { mockReservations } from "~/components/events/mockReservaitons";
+import {
+  mockReservations,
+  type Reservation,
+} from "~/components/events/mockReservaitons";
 
 const getEvents = async () => {
   const events = await db.query.events.findMany({});
@@ -51,7 +54,37 @@ const getEvent = async (eventId: number) => {
   return event;
 };
 
-const getReservations = async (eventId: Number) => {
+const getReservations = async (eventId: number) => {
+  const dbRes = await db.query.reservations.findMany({
+    where: eq(reservations.eventId, eventId),
+    with: {
+      user: {
+        columns: {
+          id: true,
+          image: true,
+        },
+        with: {
+          profiles: {
+            columns: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const mockRes: Reservation[] = dbRes.map((r) => ({
+    id: r.id.toString(),
+    firstName: r.user.profiles?.firstName ?? "Error",
+    lastName: r.user.profiles?.lastName ?? "Error",
+    userId: r.userId,
+    eventId: r.eventId.toString(),
+    status: r.status,
+    createdAt: r.createdAt,
+  }));
+
   return mockReservations;
 };
 

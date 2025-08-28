@@ -20,8 +20,6 @@ export default function EventRegistration(
 
   const reservations = data?.reservations ?? [];
 
-
-
   return <div>
     <div className="border-b border-gray-200 py-5">
       <h3 className="text-base font-semibold text-gray-900">

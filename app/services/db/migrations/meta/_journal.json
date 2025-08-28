@@ -36,6 +36,13 @@
       "when": 1755806375155,
       "tag": "0004_stiff_pestilence",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1756396708231,
+      "tag": "0005_parched_red_wolf",
+      "breakpoints": true
     }
   ]
 }
