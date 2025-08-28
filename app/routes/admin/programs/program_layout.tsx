@@ -64,12 +64,13 @@ function PageHeader() {
         </h2>
       </div>
       <div className="mt-4 flex md:mt-0 md:ml-4">
-        <button
+        <Link
+          to={`/admin/programs/${program.id}/edit`}
           type="button"
           className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50"
         >
           Edit
-        </button>
+        </Link>
         <button
           type="button"
           className="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

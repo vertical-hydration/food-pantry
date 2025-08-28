@@ -2,7 +2,7 @@
 // import { getEvents } from "./data.server";
 
 import type { Route } from "./+types/program_events";
-import { getEvents } from "../events/data.server";
+import { getprogramEvents } from "../events/data.server";
 import { Link } from "react-router";
 import { EventsTable } from "~/components/events/eventsTable";
 
@@ -12,8 +12,8 @@ import { EventsTable } from "~/components/events/eventsTable";
 
 
 
-export async function loader() {
-  const { events } = await getEvents();
+export async function loader({ params }: Route.LoaderArgs) {
+  const events = await getprogramEvents(Number(params.programId));
 
   return { events };
 }
@@ -33,12 +33,12 @@ export default function EventsIndex({ loaderData }: Route.ComponentProps) {
           </p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            type="button"
+          <Link
+            to={`create`}
             className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            Add Event
-          </button>
+            Create Event
+          </Link>
         </div>
       </div>
       <div className="mt-8 flow-root">

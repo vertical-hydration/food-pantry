@@ -25,7 +25,8 @@ const getOpenPrograms = async () => {
     {
       id: 2,
       name: "Drive Thru Events",
-      description: "For occasionally monthly drive thru events",
+      description:
+        "For occasionally monthly drive thru events",
     },
   ];
 
@@ -47,8 +48,15 @@ const saveProfileAddress = async ({
     return submission.reply();
   }
 
-  const { firstName, lastName, street, street2, zip, city, state } =
-    submission.value;
+  const {
+    firstName,
+    lastName,
+    street,
+    street2,
+    zip,
+    city,
+    state,
+  } = submission.value;
 
   await db
     .insert(profiles)
@@ -104,21 +112,35 @@ const addStudent = async ({
   return submission.reply();
 };
 
-const getStudents = async ({ userId }: { userId: string }) => {
+const getStudents = async ({
+  userId,
+}: {
+  userId: string;
+}) => {
   return await db.query.students.findMany({
-    where: (students, { eq }) => eq(students.userId, userId),
+    where: (students, { eq }) =>
+      eq(students.userId, userId),
   });
 };
 
-const getProfile = async ({ userId }: { userId: string }) => {
+const getProfile = async ({
+  userId,
+}: {
+  userId: string;
+}) => {
   return await db.query.profiles.findFirst({
     where: (profiles, { eq }) => eq(profiles.id, userId),
   });
 };
 
-const getProgram = async ({ programId }: { programId: string }) => {
+const getProgram = async ({
+  programId,
+}: {
+  programId: string;
+}) => {
   return await db.query.programs.findFirst({
-    where: (programs, { eq }) => eq(programs.id, Number(programId)),
+    where: (programs, { eq }) =>
+      eq(programs.id, Number(programId)),
   });
 };
 
@@ -138,7 +160,9 @@ const getApplicationData = async ({
   return { students, profile, program };
 };
 
-const getUserWithProfileAndStudents = async (userId: string) => {
+const getUserWithProfileAndStudents = async (
+  userId: string
+) => {
   const result = await db.query.users.findFirst({
     where: (u, { eq }) => eq(u.id, userId),
     with: {
@@ -160,7 +184,15 @@ const writeApplication = async ({
   profile: AddressProfile;
   email: string;
 }) => {
-  const { firstName, lastName, city, zip, state, street, street2 } = profile;
+  const {
+    firstName,
+    lastName,
+    city,
+    zip,
+    state,
+    street,
+    street2,
+  } = profile;
 
   return await db
     .insert(applications)
@@ -181,14 +213,20 @@ const writeApplication = async ({
     });
 };
 
-const checkUserData = async ({ userId }: { userId: string }) => {
+const checkUserData = async ({
+  userId,
+}: {
+  userId: string;
+}) => {
   const data = await getUserWithProfileAndStudents(userId);
 
   const profile = data?.profiles;
   const students = data?.students;
 
   const addressCheck = AddressSchema.safeParse(profile);
-  const studentsCheck = students ? students.length > 0 : false;
+  const studentsCheck = students
+    ? students.length > 0
+    : false;
 
   if (!addressCheck.success) {
     const applicationError = {
@@ -245,10 +283,16 @@ const submitApplication = async ({
     studentId: student.id,
   }));
 
-  return await db.insert(applicationStudents).values(studentArray);
+  return await db
+    .insert(applicationStudents)
+    .values(studentArray);
 };
 
-const getEventsOpenToUser = async ({ userId }: { userId: string }) => {
+const getEventsOpenToUser = async ({
+  userId,
+}: {
+  userId: string;
+}) => {
   // const data = await db.query.programs.findMany({
   //   with: {
   //     applications: {
@@ -261,21 +305,26 @@ const getEventsOpenToUser = async ({ userId }: { userId: string }) => {
   //   },
   // });
 
-  const applicationData = await db.query.applications.findMany({
-    where: (applications, { eq }) =>
-      and(eq(applications.userId, userId), eq(applications.status, "accepted")),
-    with: {
-      program: {
-        with: {
-          events: {
-            where: (events, { eq }) => eq(events.status, "active"),
+  const applicationData =
+    await db.query.applications.findMany({
+      where: (applications, { eq }) =>
+        and(
+          eq(applications.userId, userId),
+          eq(applications.status, "accepted")
+        ),
+      with: {
+        program: {
+          with: {
+            events: {
+              where: (events, { eq }) =>
+                eq(events.status, "active"),
+            },
           },
         },
       },
-    },
-  });
+    });
 
-  return { applicationData };
+  return applicationData;
 };
 
 export {

@@ -1,7 +1,14 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "~/services/db/db.server";
-import { applications, programs } from "~/services/db/schema";
-import { AddProgramSchema, ChangeStatusSchema } from "./schemas";
+import {
+  applications,
+  programs,
+} from "~/services/db/schema";
+import {
+  AddProgramSchema,
+  ChangeStatusSchema,
+  EditProgramSchema,
+} from "./schemas";
 import { parseWithZod } from "@conform-to/zod/v4";
 import { redirect } from "react-router";
 
@@ -27,8 +34,14 @@ const getProgramData = async ({ pid }: { pid: number }) => {
   });
 };
 
-const addProgram = async ({ formData }: { formData: FormData }) => {
-  const submission = parseWithZod(formData, { schema: AddProgramSchema });
+const addProgram = async ({
+  formData,
+}: {
+  formData: FormData;
+}) => {
+  const submission = parseWithZod(formData, {
+    schema: AddProgramSchema,
+  });
 
   if (submission.status !== "success") {
     return submission.reply();
@@ -41,7 +54,9 @@ const addProgram = async ({ formData }: { formData: FormData }) => {
   return redirect("/admin/programs");
 };
 
-const getProgramApplications = async (programId: number) => {
+const getProgramApplications = async (
+  programId: number
+) => {
   const data = await db.query.programs.findFirst({
     where: (programs, { eq }) => eq(programs.id, programId),
     with: {
@@ -52,9 +67,12 @@ const getProgramApplications = async (programId: number) => {
   return data;
 };
 
-const getApplicationData = async (applicationId: number) => {
+const getApplicationData = async (
+  applicationId: number
+) => {
   const data = await db.query.applications.findFirst({
-    where: (applications, { eq }) => eq(applications.id, applicationId),
+    where: (applications, { eq }) =>
+      eq(applications.id, applicationId),
     with: {
       studentLinks: {
         with: {
@@ -86,7 +104,9 @@ const updateApplicationStatus = async ({
   // newStatus: "submitted" | "accepted" | "waitlist" | "declined";
   formData: FormData;
 }) => {
-  const submission = parseWithZod(formData, { schema: ChangeStatusSchema });
+  const submission = parseWithZod(formData, {
+    schema: ChangeStatusSchema,
+  });
 
   if (submission.status !== "success") {
     return submission.reply();
@@ -102,7 +122,11 @@ const updateApplicationStatus = async ({
   return submission.reply();
 };
 
-const getProgramEnrollment = async ({ programId }: { programId: string }) => {
+const getProgramEnrollment = async ({
+  programId,
+}: {
+  programId: string;
+}) => {
   const data = await db
     .select()
     .from(applications)
@@ -114,6 +138,32 @@ const getProgramEnrollment = async ({ programId }: { programId: string }) => {
     );
 };
 
+const editProgram = async ({
+  formData,
+}: {
+  formData: FormData;
+}) => {
+  const submission = parseWithZod(formData, {
+    schema: EditProgramSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const { name, status, programId } = submission.value;
+
+  await db
+    .update(programs)
+    .set({
+      name,
+      status,
+    })
+    .where(eq(programs.id, programId));
+
+  return redirect("..");
+};
+
 export {
   getPrograms,
   getProgramData,
@@ -121,4 +171,5 @@ export {
   getProgramApplications,
   getApplicationData,
   updateApplicationStatus,
+  editProgram,
 };

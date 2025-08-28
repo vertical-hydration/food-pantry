@@ -47,6 +47,10 @@ export default [
               "routes/admin/programs/program_dashboard.tsx"
             ),
             route(
+              "edit",
+              "routes/admin/programs/program_edit.tsx"
+            ),
+            route(
               "enrollment",
               "routes/admin/programs/program_enrollment.tsx"
             ),

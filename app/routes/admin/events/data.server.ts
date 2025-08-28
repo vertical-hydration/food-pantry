@@ -16,6 +16,12 @@ const getEvents = async () => {
   return { events };
 };
 
+const getprogramEvents = async (programId: number) => {
+  return await db.query.events.findMany({
+    where: eq(events.programId, programId),
+  });
+};
+
 const createEvent = async ({
   formData,
 }: {
@@ -93,4 +99,5 @@ export {
   getEvents,
   createEvent,
   getReservations,
+  getprogramEvents,
 };
