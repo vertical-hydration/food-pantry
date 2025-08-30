@@ -13,24 +13,14 @@ import {
   students,
 } from "~/services/db/schema";
 import { write } from "fs";
-import { and } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { success } from "zod";
+import { redirect } from "react-router";
 
 const getOpenPrograms = async () => {
-  const programs = [
-    {
-      id: 1,
-      name: "Food Pantry Box",
-      description: "For reserving food box pickups",
-    },
-    {
-      id: 2,
-      name: "Drive Thru Events",
-      description:
-        "For occasionally monthly drive thru events",
-    },
-  ];
-
-  return { programs };
+  return await db.query.programs.findMany({
+    where: and(eq(programs.status, "active")),
+  });
 };
 
 const saveProfileAddress = async ({
@@ -173,6 +163,21 @@ const getUserWithProfileAndStudents = async (
   return result;
 };
 
+const checkApplicationExists = async ({
+  userId,
+  programId,
+}: {
+  userId: string;
+  programId: number;
+}) => {
+  return await db.query.applications.findFirst({
+    where: and(
+      eq(applications.programId, programId),
+      eq(applications.userId, userId)
+    ),
+  });
+};
+
 const writeApplication = async ({
   userId,
   programId,
@@ -215,10 +220,24 @@ const writeApplication = async ({
 
 const checkUserData = async ({
   userId,
+  programId,
 }: {
   userId: string;
+  programId: number;
 }) => {
   const data = await getUserWithProfileAndStudents(userId);
+  const applicationCheck = await checkApplicationExists({
+    userId,
+    programId,
+  });
+
+  if (applicationCheck) {
+    const applicationError = {
+      message: " Application Already Exists",
+    };
+
+    return { applicationError };
+  }
 
   const profile = data?.profiles;
   const students = data?.students;
@@ -254,11 +273,14 @@ const submitApplication = async ({
   programId: string;
   email: string;
 }) => {
-  const result = await checkUserData({ userId });
+  const result = await checkUserData({
+    userId,
+    programId: Number(programId),
+  });
   const applicationError = result?.applicationError;
 
   if (applicationError) {
-    return { applicationError };
+    return { applicationError, success: false };
   }
 
   const { profile, students } = result;
@@ -283,9 +305,9 @@ const submitApplication = async ({
     studentId: student.id,
   }));
 
-  return await db
-    .insert(applicationStudents)
-    .values(studentArray);
+  await db.insert(applicationStudents).values(studentArray);
+
+  return { success: true };
 };
 
 const getEventsOpenToUser = async ({
@@ -327,6 +349,39 @@ const getEventsOpenToUser = async ({
   return applicationData;
 };
 
+const getUserApplications = async ({
+  userId,
+}: {
+  userId: string;
+}) => {
+  return await db.query.applications.findMany({
+    where: eq(applications.userId, userId),
+  });
+};
+
+const getOpenProgramsForUser = async ({
+  userId,
+}: {
+  userId: string;
+}) => {
+  return await db.query.programs.findMany({
+    where: eq(programs.status, "active"),
+    with: {
+      applications: {
+        where: eq(applications.userId, userId),
+      },
+    },
+  });
+};
+
+const createReservation = async ({
+  formData,
+}: {
+  formData: FormData;
+}) => {
+  return redirect(`/community`);
+};
+
 export {
   getOpenPrograms,
   saveProfileAddress,
@@ -337,4 +392,7 @@ export {
   getProgram,
   submitApplication,
   getEventsOpenToUser,
+  getOpenProgramsForUser,
+  checkApplicationExists,
+  createReservation,
 };

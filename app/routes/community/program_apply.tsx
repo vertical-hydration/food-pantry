@@ -6,6 +6,7 @@ import { parseWithZod } from '@conform-to/zod/v4';
 import { Form, redirect, useLoaderData, } from 'react-router';
 import {
   addStudent,
+  checkApplicationExists,
   getProgram,
   getUserWithProfileAndStudents,
   saveProfileAddress,
@@ -22,10 +23,15 @@ import AddressCard from './components/address_card';
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { user } = await requireAuth({ request });
   const programId = params.programId;
+
   const program = await getProgram({ programId });
   if (!program) {
     throw new Error('Program not found');
   }
+  const applicationCheck = await checkApplicationExists({
+    userId: user.id,
+    programId: Number(programId),
+  });
 
   const userProfileData = await getUserWithProfileAndStudents(user.id);
   const profile = userProfileData?.profiles;
@@ -40,7 +46,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     zip: profile?.zip ?? '',
   }
 
-  return { user, program, userProfileData, defaultValue };
+  return { user, program, userProfileData, defaultValue, applicationCheck };
 };
 
 export async function action({ request, params }: Route.ActionArgs) {
@@ -63,7 +69,14 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   if (intent === 'submitApplication') {
 
-    await submitApplication({ userId: user.id, programId, email: user.email });
+    const result = await submitApplication({ userId: user.id, programId, email: user.email });
+
+    if (result?.applicationError) {
+      return {
+        error: result.applicationError
+      }
+
+    }
 
     return redirect('/community/programs')
   }
@@ -77,7 +90,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
 
 export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
-  const { user, program, userProfileData, defaultValue } = loaderData;
+  const { user, program, userProfileData, defaultValue, applicationCheck } = loaderData;
 
   const profile = userProfileData?.profiles;
   const students = userProfileData?.students;
@@ -143,7 +156,7 @@ export default function ApplicationForm({ loaderData }: Route.ComponentProps) {
         </div>
         <div>
           <pre>
-            {JSON.stringify(profile, null, 2)}
+            {JSON.stringify(applicationCheck, null, 2)}
           </pre>
         </div>
         <div className="grid grid-cols-1 gap-x-8 gap-y-8 py-10 md:grid-cols-3">

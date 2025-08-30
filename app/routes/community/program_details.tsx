@@ -60,8 +60,7 @@ export default function ProgramDetails() {
                   Product information
                 </h2>
                 <p className="mt-2 text-sm text-gray-500">
-                  (Updated{' '}
-                  <time dateTime={program.updatedAt.toISOString()}>{program.updatedAt.toLocaleDateString()}</time>)
+
                 </p>
               </div>
 

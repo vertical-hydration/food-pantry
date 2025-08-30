@@ -1,17 +1,6 @@
-import { useEffect, useState } from "react"
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle
-} from "@headlessui/react"
-import {
-  ChevronDownIcon,
-  HomeIcon
-} from '@heroicons/react/24/outline'
 import { DateInput, TextGroupInput } from '~/components/text_input_group'
 import { useForm } from "@conform-to/react"
-import { Form, redirect, useActionData } from "react-router"
+import { Form, useActionData } from "react-router"
 import { parseWithZod } from "node_modules/@conform-to/zod/dist/v4/parse"
 import { NewEventSchema } from "./schemas"
 import { requireSettingsView } from "~/services/auth/auth_utils.server"

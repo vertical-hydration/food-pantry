@@ -1,5 +1,6 @@
 import { ArrowRightCircleIcon, CalendarDaysIcon, CheckCircleIcon, ClockIcon, UsersIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router";
+import ReserveCard from "~/routes/community/components/reserve_card";
 
 
 export type EventCardProps = {
@@ -31,17 +32,28 @@ export function EventCard2({ event }: EventCardProps) {
 }
 
 
-const statusConfig = {
-  planning: { color: 'bg-gray-100 text-gray-800' },
-  "open-for-requests": { color: 'bg-green-100 text-green-800' },
-  "open-for-pickups": { color: 'bg-blue-100 text-blue-800' },
-  "event-finished": { color: 'bg-purple-100 text-purple-800' }
-};
+
 
 export function EventCard({ event }: EventCardProps) {
 
 
   const imageSrc = "https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?auto=format&fit=crop&q=80&w=1000"
+
+  const eventInfo = {
+    name: event.name,
+    imageSrc: imageSrc,
+    imageAlt: event.name,
+    pickupTimes: [
+      { name: '2:00 PM', available: true, id: "1400" },
+      { name: '2:30 PM', available: true, id: "1430" },
+      { name: '3:00 PM', available: true, id: "1500" },
+      { name: '3:30 PM', available: true, id: "1530" },
+      { name: '4:00 PM', available: true, id: "1600" },
+      { name: '4:30 PM', available: true, id: "1630" },
+      { name: '5:00 PM', available: true, id: "1700" },
+      { name: '5:30 PM', available: false, id: "1730" },
+    ],
+  }
 
 
   return (
@@ -82,14 +94,14 @@ export function EventCard({ event }: EventCardProps) {
 
           </div>
         </div>
-
-        <button
-          // onClick={() => onEventClick(event.id)}
+        <ReserveCard eventInfo={eventInfo} />
+        {/* <Link
+          to={`/community/events/${event.id}/reserve`}
           className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
         >
-          View Details
+          Request Reservation
           <ArrowRightCircleIcon className="w-4 h-4" />
-        </button>
+        </Link> */}
       </div>
     </div>
   );

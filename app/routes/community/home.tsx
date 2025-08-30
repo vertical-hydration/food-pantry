@@ -16,7 +16,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     return p.events.map(e => ({
       ...e,
-      programName: p.name
+      programName: p.name,
+
     }))
   });
 

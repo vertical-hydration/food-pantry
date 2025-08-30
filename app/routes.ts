@@ -25,6 +25,10 @@ export default [
           ),
         ]),
       ]),
+      route(
+        "events/:eventId/reserve",
+        "routes/community/request_reservation.tsx"
+      ),
     ]),
     //  route("programs", ""),
   ]),
