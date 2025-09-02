@@ -52,6 +52,7 @@ const timestamps = {
 export const programs = foodPantry.table("programs", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().default("program"),
+  image: text("image"),
   status: programStatusEnum().default("inactive").notNull(),
   ...timestamps,
 });
@@ -60,6 +61,8 @@ export const events = foodPantry.table("events", {
   id: serial().primaryKey(),
   name: text().notNull().default("event"),
   status: eventStatusEnum().default("inactive").notNull(),
+  location: text().notNull().default(""),
+  time: text().notNull().default(""),
   programId: integer("program_id")
     .references(() => programs.id)
     .notNull(),
@@ -82,6 +85,7 @@ export const reservations = foodPantry.table(
     eventId: integer("event_id")
       .references(() => events.id)
       .notNull(),
+    option: json(),
     ...timestamps,
   }
 );

@@ -2,14 +2,23 @@ import { ArrowRightCircleIcon, CalendarDaysIcon, CheckCircleIcon, ClockIcon, Use
 import { Link } from "react-router";
 import ReserveCard from "~/routes/community/components/reserve_card";
 
+export type EventDetails = {
+  id: number;
+  name: string;
+  programName: string;
+  imageSrc: string;
+  imageAlt: string;
+  eventDate: Date;
+  location: string;
+  pickupTimes: Array<{
+    name: string;
+    available: boolean;
+    id: string;
+  }>;
+};
 
 export type EventCardProps = {
-  event: {
-    id: number;
-    name: string;
-    programName: string;
-    eventDate: Date;
-  };
+  event: EventDetails;
 };
 
 
@@ -37,31 +46,13 @@ export function EventCard2({ event }: EventCardProps) {
 export function EventCard({ event }: EventCardProps) {
 
 
-  const imageSrc = "https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?auto=format&fit=crop&q=80&w=1000"
-
-  const eventInfo = {
-    name: event.name,
-    imageSrc: imageSrc,
-    imageAlt: event.name,
-    pickupTimes: [
-      { name: '2:00 PM', available: true, id: "1400" },
-      { name: '2:30 PM', available: true, id: "1430" },
-      { name: '3:00 PM', available: true, id: "1500" },
-      { name: '3:30 PM', available: true, id: "1530" },
-      { name: '4:00 PM', available: true, id: "1600" },
-      { name: '4:30 PM', available: true, id: "1630" },
-      { name: '5:00 PM', available: true, id: "1700" },
-      { name: '5:30 PM', available: false, id: "1730" },
-    ],
-  }
-
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="h-48 relative">
         <img
-          src={imageSrc}
-          alt={event.name}
+          src={event.imageSrc}
+          alt={event.imageAlt}
           className="w-full h-full object-cover"
         />
         <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-medium text-gray-700 shadow-sm">
@@ -94,7 +85,7 @@ export function EventCard({ event }: EventCardProps) {
 
           </div>
         </div>
-        <ReserveCard eventInfo={eventInfo} />
+        <ReserveCard event={event} />
         {/* <Link
           to={`/community/events/${event.id}/reserve`}
           className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"

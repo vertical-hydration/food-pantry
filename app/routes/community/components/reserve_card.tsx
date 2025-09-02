@@ -3,41 +3,22 @@ import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import { BriefcaseIcon, CalendarIcon, ClockIcon, MapPinIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { StarIcon } from '@heroicons/react/20/solid'
 import { clsx } from 'clsx'
+import type { EventCardProps, EventDetails } from '~/components/events/event_card'
+import { useFetcher } from 'react-router'
 
 
-const imageSrc = "https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?auto=format&fit=crop&q=80&w=1000"
-
-const eventInfo = {
-  name: 'Food Box Pickup Event',
-  imageSrc: imageSrc,
-  imageAlt: 'Food Pickup Event',
-
-  pickupTimes: [
-    { name: '2:00 PM', available: true, id: "1400" },
-    { name: '2:30 PM', available: true, id: "1430" },
-    { name: '3:00 PM', available: true, id: "1500" },
-    { name: '3:30 PM', available: true, id: "1530" },
-    { name: '4:00 PM', available: true, id: "1600" },
-    { name: '4:30 PM', available: true, id: "1630" },
-    { name: '5:00 PM', available: true, id: "1700" },
-    { name: '5:30 PM', available: false, id: "1730" },
-  ],
-}
-
-type EventInfo = {
-  name: string
-  imageSrc: string
-  imageAlt: string
-  pickupTimes: Array<{
-    name: string
-    available: boolean
-    id: string
-  }>
-}
 
 
-export default function ReserveCard({ eventInfo }: { eventInfo: EventInfo }) {
+
+
+
+
+
+export default function ReserveCard({ event }: { event: EventDetails }) {
   const [open, setOpen] = useState(false)
+
+  const postUrl = `/community/events/${event.id}/reserve`
+  const fetcher = useFetcher();
 
   return (
     <>
@@ -69,8 +50,8 @@ export default function ReserveCard({ eventInfo }: { eventInfo: EventInfo }) {
 
                 <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
                   <img
-                    alt={eventInfo.imageAlt}
-                    src={eventInfo.imageSrc}
+                    alt={event.imageAlt}
+                    src={event.imageSrc}
                     className="aspect-square w-full rounded-lg bg-gray-100 object-cover sm:col-span-4 lg:col-span-5"
                   />
                   <div className="sm:col-span-8 lg:col-span-7 md:mt-8">
@@ -83,7 +64,7 @@ export default function ReserveCard({ eventInfo }: { eventInfo: EventInfo }) {
                         Product options
                       </h3>
 
-                      <form>
+                      <fetcher.Form method="post" action={postUrl}>
 
 
                         {/* Pickup Times */}
@@ -96,22 +77,22 @@ export default function ReserveCard({ eventInfo }: { eventInfo: EventInfo }) {
                           </div>
 
                           <div className="mt-2 grid grid-cols-4 gap-3">
-                            {eventInfo.pickupTimes.map((size) => (
+                            {event.pickupTimes.map((t) => (
                               <label
-                                key={size.id}
-                                aria-label={size.name}
+                                key={t.id}
+                                aria-label={t.name}
                                 className="group relative flex items-center justify-center rounded-md border border-gray-300 bg-white p-3 has-checked:border-indigo-600 has-checked:bg-indigo-600 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-indigo-600 has-disabled:border-gray-400 has-disabled:bg-gray-200 has-disabled:opacity-25"
                               >
                                 <input
-                                  defaultValue={size.id}
-                                  defaultChecked={size === eventInfo.pickupTimes[2]}
-                                  name="size"
+                                  defaultValue={t.id}
+                                  defaultChecked={t === event.pickupTimes[2]}
+                                  name="pickupTime"
                                   type="radio"
-                                  disabled={!size.available}
+                                  disabled={!t.available}
                                   className="absolute inset-0 appearance-none focus:outline-none disabled:cursor-not-allowed"
                                 />
                                 <span className="text-sm font-medium text-gray-900 uppercase group-has-checked:text-white">
-                                  {size.name}
+                                  {t.name}
                                 </span>
                               </label>
                             ))}
@@ -124,7 +105,7 @@ export default function ReserveCard({ eventInfo }: { eventInfo: EventInfo }) {
                         >
                           Request Reservation
                         </button>
-                      </form>
+                      </fetcher.Form>
                     </section>
                   </div>
                 </div>

@@ -2,7 +2,7 @@ import { DateInput, TextGroupInput } from '~/components/text_input_group'
 import { useForm } from "@conform-to/react"
 import { Form, useActionData, useLoaderData } from "react-router"
 import { parseWithZod } from "node_modules/@conform-to/zod/dist/v4/parse"
-import { requireAuth, requireSettingsView } from "~/services/auth/auth_utils.server"
+import { requireAuth } from "~/services/auth/auth_utils.server"
 import { createReservation } from './community.server'
 import { CreateReservationSchema } from './schemas'
 import type { Route } from './+types/request_reservation'
@@ -48,10 +48,13 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 
-export async function action({ request }: Route.ActionArgs) {
-  const { } = await requireSettingsView({ request })
+export async function action({ request, params }: Route.ActionArgs) {
+  const { user } = await requireAuth({ request })
+  const eventId = params.eventId
 
   const formData = await request.formData()
+  formData.append("userId", user.id);
+  formData.append("eventId", eventId);
 
   return await createReservation({ formData })
 
@@ -96,10 +99,10 @@ export default function CreateReservation({ params, loaderData }: Route.Componen
             <div className="mb-6">
               <SelectInputGroup
                 fields={{
-                  id: fields.reserveTime.id,
-                  name: fields.reserveTime.name,
-                  defaultValue: fields.reserveTime.defaultValue || selectOptions[0].value,
-                  errors: fields.reserveTime.errors || [],
+                  id: fields.pickupTime.id,
+                  name: fields.pickupTime.name,
+                  defaultValue: fields.pickupTime.defaultValue || selectOptions[0].value,
+                  errors: fields.pickupTime.errors || [],
                   label: 'Pickup Time'
                 }}
                 options={selectOptions}

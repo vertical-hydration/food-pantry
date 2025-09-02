@@ -2,6 +2,7 @@ import { parseWithZod } from "@conform-to/zod/v4";
 import {
   AddressSchema,
   AddStudentSchema,
+  CreateReservationSchema,
   type AddressProfile,
 } from "./schemas";
 import { db } from "~/services/db/db.server";
@@ -10,6 +11,7 @@ import {
   applicationStudents,
   profiles,
   programs,
+  reservations,
   students,
 } from "~/services/db/schema";
 import { write } from "fs";
@@ -379,7 +381,25 @@ const createReservation = async ({
 }: {
   formData: FormData;
 }) => {
-  return redirect(`/community`);
+  const submission = parseWithZod(formData, {
+    schema: CreateReservationSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const { userId, eventId, pickupTime } = submission.value;
+
+  await db.insert(reservations).values({
+    userId,
+    eventId,
+    option: {
+      pickupTime,
+    },
+  });
+
+  return { formData };
 };
 
 export {

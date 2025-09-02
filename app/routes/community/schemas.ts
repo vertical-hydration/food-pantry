@@ -40,5 +40,6 @@ export const ValidApplyIntents = z.object({
 
 export const CreateReservationSchema = z.object({
   userId: z.string(),
-  reserveTime: z.string(),
+  eventId: z.number(),
+  pickupTime: z.string(),
 });
