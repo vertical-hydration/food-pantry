@@ -1,0 +1,1 @@
+ALTER TABLE "food_pantry"."programs" ADD COLUMN "image" text;

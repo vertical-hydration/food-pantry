@@ -1,0 +1,1 @@
+ALTER TABLE "food_pantry"."reservations" ADD COLUMN "option" json;
