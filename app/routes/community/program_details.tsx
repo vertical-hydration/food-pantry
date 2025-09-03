@@ -1,8 +1,8 @@
 import { Fragment } from 'react'
-import { StarIcon } from '@heroicons/react/20/solid'
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { clsx } from 'clsx'
 import { Link } from 'react-router'
+import type { Route } from './+types/program_details'
+import { getProgram } from './community.server'
 
 const program = {
   name: 'Food Box Pickup Program',
@@ -31,9 +31,24 @@ const faqs = [
 ]
 
 
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const programId = params.programId;
+  const program = await getProgram({ programId });
+
+  if (!program) {
+    throw new Response('Not Found', { status: 404 });
+  }
+
+  return { program };
+}
 
 
-export default function ProgramDetails() {
+
+export default function ProgramDetails({ loaderData }: Route.ComponentProps) {
+  const { program } = loaderData;
+
+
+
   return (
     <div className="bg-white">
       <div className="mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
@@ -42,8 +57,8 @@ export default function ProgramDetails() {
           {/* Product image */}
           <div className="lg:col-span-4 lg:row-end-1">
             <img
-              alt={program.imageAlt}
-              src={program.imageSrc}
+              alt={program.name}
+              src={program.image}
               className="aspect-4/3 w-full rounded-lg bg-gray-100 object-cover"
             />
           </div>
@@ -76,13 +91,16 @@ export default function ProgramDetails() {
               </h3>
               <div className="mt-4">
                 <ul role="list" className="list-disc space-y-1 pl-5 text-sm/6 text-gray-500 marker:text-gray-300">
-                  {program.eligibility.map((highlight) => (
-                    <li key={highlight} className="pl-2">
-                      {highlight}
+                  {program.eligibility.requirements.map((item) => (
+                    <li key={item} className="pl-2">
+                      {item}
                     </li>
                   ))}
                 </ul>
               </div>
+              <pre>
+                {JSON.stringify(program, null, 2)}
+              </pre>
             </div>
 
           </div>

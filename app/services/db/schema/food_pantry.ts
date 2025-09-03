@@ -9,6 +9,7 @@ import {
   pgEnum,
   uuid,
   json,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { users } from "./auth_schema";
 import { randomUUID } from "crypto";
@@ -16,6 +17,19 @@ import { relations } from "drizzle-orm";
 // ...existing code...
 
 export const foodPantry = pgSchema("food_pantry");
+
+type FAQ = {
+  question: string;
+  answer: string;
+};
+
+type FAQDATA = {
+  faqs: FAQ[];
+};
+
+type Eligibity = {
+  requirements: string[];
+};
 
 export const programStatusEnum = pgEnum("program_status", [
   "active",
@@ -52,7 +66,16 @@ const timestamps = {
 export const programs = foodPantry.table("programs", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().default("program"),
-  image: text("image"),
+  image: text("image").notNull(),
+  description: text().default("").notNull(),
+  eligibility: jsonb()
+    .$type<Eligibity>()
+    .default({ requirements: [] })
+    .notNull(),
+  faqs: jsonb()
+    .$type<FAQDATA>()
+    .default({ faqs: [] })
+    .notNull(),
   status: programStatusEnum().default("inactive").notNull(),
   ...timestamps,
 });

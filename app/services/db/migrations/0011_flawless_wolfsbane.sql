@@ -1,0 +1,2 @@
+ALTER TABLE "food_pantry"."programs" ALTER COLUMN "eligibility" SET DEFAULT '{"requirements":[]}'::jsonb;--> statement-breakpoint
+ALTER TABLE "food_pantry"."programs" ALTER COLUMN "faqs" SET DEFAULT '{"faqs":[]}'::jsonb;
