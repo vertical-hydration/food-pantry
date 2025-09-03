@@ -39,13 +39,15 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     throw new Response('Not Found', { status: 404 });
   }
 
-  return { program };
+  const faqs = program.faqs?.faqs || [];
+
+  return { program, faqs };
 }
 
 
 
 export default function ProgramDetails({ loaderData }: Route.ComponentProps) {
-  const { program } = loaderData;
+  const { program, faqs } = loaderData;
 
 
 
@@ -98,9 +100,7 @@ export default function ProgramDetails({ loaderData }: Route.ComponentProps) {
                   ))}
                 </ul>
               </div>
-              <pre>
-                {JSON.stringify(program, null, 2)}
-              </pre>
+
             </div>
 
           </div>
