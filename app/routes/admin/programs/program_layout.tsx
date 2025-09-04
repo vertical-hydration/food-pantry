@@ -34,11 +34,9 @@ export default function ProgramLayout(
   return (
     <>
       <PageHeading title={"Programs"} />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading title={program.name} />
-        <NavTabs tabs={tabs} />
-        <Outlet />
-      </div>
+      <SectionHeading title={program.name} />
+      <NavTabs tabs={tabs} />
+      <Outlet />
     </>
   )
 
@@ -87,6 +85,11 @@ async function processProgramData({ pid }: { pid: string }) {
       name: 'Events',
       to: `/admin/programs/${pid}/events`,
       // count: '4',
+      end: false
+    },
+    {
+      name: 'Edit',
+      to: `/admin/programs/${pid}/edit`,
       end: false
     }
   ]

@@ -1,4 +1,5 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
+
 import { db } from "~/services/db/db.server";
 import {
   applications,
@@ -114,9 +115,24 @@ const updateApplicationStatus = async ({
 
   const { newStatus } = submission.value;
 
+  if (newStatus === "accepted") {
+    await db
+      .update(applications)
+      .set({
+        status: newStatus,
+        acceptedDate: sql`now()`,
+      })
+      .where(eq(applications.id, aid));
+
+    return submission.reply();
+  }
+
   await db
     .update(applications)
-    .set({ status: newStatus })
+    .set({
+      status: newStatus,
+      acceptedDate: new Date("12-15-2024"),
+    })
     .where(eq(applications.id, aid));
 
   return submission.reply();

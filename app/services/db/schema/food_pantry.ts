@@ -66,7 +66,7 @@ const timestamps = {
 export const programs = foodPantry.table("programs", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().default("program"),
-  image: text("image").notNull(),
+  image: text("image"),
   description: text().default("").notNull(),
   eligibility: jsonb()
     .$type<Eligibity>()

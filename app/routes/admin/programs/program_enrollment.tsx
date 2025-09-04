@@ -1,4 +1,4 @@
-import type { Route } from "./+types/program_dashboard";
+import type { Route } from "./+types/program_enrollment";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 import { UserImage } from "~/components/user_image";
@@ -6,12 +6,19 @@ import { enrolleeColumns, EnrollmentTable, type Enrollee, } from "./program_tabl
 import { mockEnrollees } from "./mockData";
 import { useRouteLoaderData } from "react-router";
 import type { Route as ProgramRoute } from "./+types/program_layout"
+import { DataTable } from "~/components/site/data_table";
+import { SectionDescription } from "~/components/site/section_description";
 
 
 
 
 export async function loader() {
-  return {}
+
+  const programSection = {
+    title: "Enrolled Families",
+    description: "Users who have enrolled in this program will be listed here. You can review their applications and take necessary actions."
+  }
+  return { programSection }
 }
 
 export default function ProgramEnrollment(
@@ -19,6 +26,8 @@ export default function ProgramEnrollment(
 ) {
 
   const data = useRouteLoaderData<ProgramRoute.ComponentProps["loaderData"]>("programId");
+
+  const { programSection } = loaderData;
 
   const applications = data?.applications ?? [];
 
@@ -35,17 +44,14 @@ export default function ProgramEnrollment(
     image: "",
   }));
 
-  return <div>
-    <div className="border-b border-gray-200 py-5">
-      <h3 className="text-base font-semibold text-gray-900">
-        Program Enrollment
-      </h3>
-      <p className="mt-2 max-w-4xl text-sm text-gray-500">
-        Users who have enrolled in this program will be listed here. You can review their applications and take necessary actions.
-      </p>
-    </div>
-    <EnrollmentTable columns={enrolleeColumns} data={mockEnrollees} />
-  </div>;
+  return <>
+    <SectionDescription
+      heading={programSection.title}
+      description={programSection.description}
+    />
+
+    <DataTable columns={enrolleeColumns} data={mockEnrollees} />
+  </>;
 
 }
 
