@@ -17,6 +17,8 @@ import { relations } from "drizzle-orm";
 // ...existing code...
 
 export const foodPantry = pgSchema("food_pantry");
+export type ProgramDb = typeof programs.$inferSelect;
+export type EventDb = typeof events.$inferSelect;
 
 type FAQ = {
   question: string;

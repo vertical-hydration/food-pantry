@@ -5,6 +5,8 @@ import { PageHeading, SectionHeading } from "~/components/site/headers";
 import { SectionDescription } from "~/components/site/section_description";
 import { DataTable } from "~/components/site/data_table";
 import { programsIndexColumns } from "~/components/programs/admin_tables";
+import { StandardContainer } from "~/components/site/standard_container";
+import type { ProgramDb } from "~/services/db/schema";
 
 
 
@@ -33,27 +35,34 @@ export default function Programs({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <PageHeading title="Programs" />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="All Programs">
-          <Link to="create">
-            <button
-              type="button"
-              className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              Add Program
-            </button>
-          </Link>
-        </SectionHeading>
-        <SectionDescription
-          heading={details.heading}
-          description={details.description}
-        />
-        <DataTable
-          columns={programsIndexColumns}
-          data={programs}
-        />
-      </div>
+      <SectionHeading title="All Programs">
+        <Link to="create">
+          <button
+            type="button"
+            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            Add Program
+          </button>
+        </Link>
+      </SectionHeading>
+      <SectionDescription
+        heading={details.heading}
+        description={details.description}
+      />
+      <ProgramsDataTable programs={programs} />
     </>
 
   )
+}
+
+
+function ProgramsDataTable({ programs }: { programs: ProgramDb[] }) {
+  return (
+    <StandardContainer>
+      <DataTable
+        columns={programsIndexColumns}
+        data={programs}
+      />
+    </StandardContainer>
+  );
 }

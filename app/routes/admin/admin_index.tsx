@@ -1,10 +1,11 @@
+import { StandardContainer } from "~/components/site/standard_container";
 
 
 
 export default function AdminIndex() {
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
+    <StandardContainer>
       <h1>Admin Dashboard</h1>
-    </div>
+    </StandardContainer>
   );
 }

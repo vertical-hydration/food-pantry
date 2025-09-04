@@ -73,7 +73,7 @@ export default [
             ),
             route(
               "events/create",
-              "routes/admin/events/create_events.tsx"
+              "routes/admin/programs/program_event_create.tsx"
             ),
           ]
         ),

@@ -3,12 +3,14 @@ import { and, eq, sql } from "drizzle-orm";
 import { db } from "~/services/db/db.server";
 import {
   applications,
+  events,
   programs,
 } from "~/services/db/schema";
 import {
   AddProgramSchema,
   ChangeStatusSchema,
   EditProgramSchema,
+  NewEventSchema,
 } from "./schemas";
 import { parseWithZod } from "@conform-to/zod/v4";
 import { redirect } from "react-router";
@@ -180,6 +182,33 @@ const editProgram = async ({
   return redirect("..");
 };
 
+const createProgramEvent = async ({
+  formData,
+}: {
+  formData: FormData;
+}) => {
+  const submission = parseWithZod(formData, {
+    schema: NewEventSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const value = submission.value;
+
+  const writeData = await db
+    .insert(events)
+    .values({
+      ...value,
+    })
+    .returning();
+
+  const eventId = writeData[0].id;
+
+  return redirect(`/admin/events/${eventId}`);
+};
+
 export {
   getPrograms,
   getProgramData,
@@ -188,4 +217,5 @@ export {
   getApplicationData,
   updateApplicationStatus,
   editProgram,
+  createProgramEvent,
 };

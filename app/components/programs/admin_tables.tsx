@@ -1,6 +1,7 @@
 import { ArrowsUpDownIcon } from "@heroicons/react/24/outline";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router";
+import type { EventDb } from "~/services/db/schema";
 
 type ProgramRow = {
   id: number;
@@ -147,3 +148,33 @@ export const applicationsColumns: ColumnDef<Applicant>[] = [
 
 ]
 
+
+export const ProgramEventsColumns: ColumnDef<EventDb>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "eventDate",
+    header: "Event Date",
+    cell: ({ row }) => {
+      const eventDate = row.original.eventDate;
+      return (
+        <span>
+          {eventDate ? eventDate.toDateString() : "No Date Set"}
+        </span>
+      );
+    },
+    enableColumnFilter: false,
+  },
+
+  {
+    accessorKey: "id",
+    header: "ID",
+    cell: ({ row }) => {
+      return <Link to={`/admin/events/${row.original.id}`}>
+        Link
+      </Link>;
+    },
+  }
+];

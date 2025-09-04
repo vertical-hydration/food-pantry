@@ -1,63 +1,41 @@
-import { Form } from "react-router";
-import type { Route } from "./+types/program_edit";
-import { useForm } from "node_modules/@conform-to/react/dist/hooks";
-import { parseWithZod } from "node_modules/@conform-to/zod/dist/v4/parse";
-import { EditProgramSchema } from "./schemas";
-import { TextGroupInput } from "~/components/text_input_group";
-import { editProgram, getProgramData } from "./data.server";
-import { requireSettingsView } from "~/services/auth/auth_utils.server";
-import { StandardContainer } from "~/components/site/standard_container";
-import { desc } from "drizzle-orm";
-import { Description } from "@headlessui/react";
+import { DateInput, TextGroupInput } from '~/components/text_input_group'
+import { useForm } from "@conform-to/react"
+import { Form, useActionData } from "react-router"
+import { parseWithZod } from "node_modules/@conform-to/zod/dist/v4/parse"
+import { NewEventSchema } from "./schemas"
+import { requireSettingsView } from "~/services/auth/auth_utils.server"
+import { createProgramEvent } from "./data.server"
+import type { Route } from './+types/program_event_create'
+import { StandardContainer } from '~/components/site/standard_container'
 
-
-export async function loader({ params }: Route.LoaderArgs) {
-  const pid = Number(params.programId);
-  const program = await getProgramData({ pid });
-
-  if (!program) {
-    throw new Response("Program not found", { status: 404 });
-  }
-
-  const initialValues = {
-    name: program.name,
-    status: program.status,
-    description: program.description,
-    image: program.image ? program.image : null,
-  }
-
-  return { program, initialValues };
+export async function loader({ request }: Route.LoaderArgs) {
+  return {}
 }
 
 
-export async function action({ params, request }: Route.ActionArgs) {
-  await requireSettingsView({ request });
-  const formData = await request.formData();
+export async function action({ request }: Route.ActionArgs) {
+  const { } = await requireSettingsView({ request })
 
-  return await editProgram({ formData });
+  const formData = await request.formData()
+
+  return await createProgramEvent({ formData })
 }
 
+export default function CreateEvents({ params }: Route.ComponentProps) {
+  const lastResult = useActionData();
+  const pid = params.programId
 
-export default function ProgramEdit({
-  loaderData, actionData, params }: Route.ComponentProps
-) {
-  const pid = Number(params.programId);
-  const { program, initialValues } = loaderData;
   const [form, fields] = useForm({
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema: EditProgramSchema })
+      return parseWithZod(formData, { schema: NewEventSchema })
     },
-    lastResult: actionData,
-    defaultValue: initialValues,
+    lastResult
   })
   return (
     <StandardContainer>
-
-      <div className="flex items-center justify-center bg-gray-50 py-8 px-4">
+      <div className="flex items-center justify-center bg-gray-50 py-8 p-4">
         <div className="w-full max-w-xl bg-white rounded-2xl shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-indigo-700 mb-6 text-center">
-            Edit Program
-          </h1>
+          <h1 className="text-3xl font-bold text-indigo-700 mb-6 text-center">Create Event</h1>
           <Form
             method="POST"
             onSubmit={form.onSubmit}
@@ -65,7 +43,7 @@ export default function ProgramEdit({
           >
             <div className="grid grid-cols-1 gap-y-6">
               <TextGroupInput
-                label={"Program Name"}
+                label={"Event Name"}
                 id={fields.name.id}
                 name={fields.name.name}
                 defaultValue={fields.name.defaultValue}
@@ -73,22 +51,42 @@ export default function ProgramEdit({
                 autoComplete={fields.name.id}
               />
               <TextGroupInput
-                label={"Program Description"}
-                id={fields.description.id}
-                name={fields.description.name}
-                defaultValue={fields.description.defaultValue}
-                errors={fields.description.errors}
-                autoComplete={fields.description.id}
+                label={"Location"}
+                id={fields.location.id}
+                name={fields.location.name}
+                defaultValue={fields.location.defaultValue}
+                errors={fields.location.errors}
+                autoComplete={fields.location.id}
               />
               <TextGroupInput
-                label={"Program Image"}
-                id={fields.image.id}
-                name={fields.image.name}
-                defaultValue={fields.image.defaultValue}
-                errors={fields.image.errors}
-                autoComplete={fields.image.id}
+                label={"Time"}
+                id={fields.time.id}
+                name={fields.time.name}
+                defaultValue={fields.time.defaultValue}
+                errors={fields.time.errors}
+                autoComplete={fields.time.id}
               />
-
+              <DateInput
+                label={"Event Date"}
+                id={fields.eventDate.id}
+                name={fields.eventDate.name}
+                defaultValue={fields.eventDate.defaultValue}
+                errors={fields.eventDate.errors}
+              />
+              <DateInput
+                label={"Open Date"}
+                id={fields.openDate.id}
+                name={fields.openDate.name}
+                defaultValue={fields.openDate.defaultValue}
+                errors={fields.openDate.errors}
+              />
+              <DateInput
+                label={"Close Date"}
+                id={fields.closeDate.id}
+                name={fields.closeDate.name}
+                defaultValue={fields.closeDate.defaultValue}
+                errors={fields.closeDate.errors}
+              />
               {/* Status select input */}
               <div className="sm:col-span-3">
                 <label htmlFor={fields.status?.id || 'status'} className="block text-sm/6 text-left font-medium text-gray-900">
@@ -112,16 +110,19 @@ export default function ProgramEdit({
                   </p>
                 )}
               </div>
-              <input type="hidden" name={"programId"} value={pid} />
+              <input type="hidden" name={fields.programId.name} value={pid} />
             </div>
+            <pre className="bg-gray-100 rounded-md p-3 mt-4 text-xs text-gray-600 overflow-x-auto">
+              {JSON.stringify(form.allErrors, null, 2)}
+            </pre>
             <div className="mt-8 flex gap-4 justify-end">
               <button
                 type="submit"
                 name="intent"
-                value="editProgram"
+                value="createEvent"
                 className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-6 py-2 text-base font-semibold text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition"
               >
-                Save
+                Create Event
               </button>
               <button
                 type="button"
@@ -135,5 +136,5 @@ export default function ProgramEdit({
         </div>
       </div>
     </StandardContainer>
-  )
+  );
 }

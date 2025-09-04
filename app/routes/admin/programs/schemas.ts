@@ -16,5 +16,23 @@ export const ChangeStatusSchema = z.object({
 export const EditProgramSchema = z.object({
   name: z.string().min(2),
   status: z.enum(["active", "inactive", "archived"]),
+  description: z.string(),
+  image: z.string(),
   programId: z.number(),
+});
+
+export const NewEventSchema = z.object({
+  name: z
+    .string()
+    .min(
+      3,
+      "Event names must be at least 3 characters long."
+    ),
+  location: z.string(),
+  time: z.string(),
+  eventDate: z.date(),
+  openDate: z.date(),
+  closeDate: z.date(),
+  programId: z.number(),
+  status: z.enum(["active", "inactive", "archived"]),
 });
