@@ -8,7 +8,8 @@ import {
 
 export default [
   route("api/auth/*", "routes/auth_api.tsx"),
-  index("routes/home.tsx"),
+  index("routes/landing.tsx"),
+  route("about", "routes/about.tsx"),
   route("login", "routes/login.tsx"),
 
   // community Routes
