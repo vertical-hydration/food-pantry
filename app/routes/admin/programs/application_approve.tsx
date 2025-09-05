@@ -51,11 +51,10 @@ export default function ApplicationApproval({
   loaderData
 }: Route.ComponentProps) {
   const { application, students } = loaderData;
-  return <div>
+  return <>
     <ChangeStatusForm currentStatus={application.status ?? "submitted"} />
-    <ApplicationCard applicationInfo={application}>
-      <div></div>
-    </ApplicationCard>
+    <ApplicationCard applicationInfo={application} />
     <StudentsCard students={students} />
-  </div>
+  </>
 }
+
