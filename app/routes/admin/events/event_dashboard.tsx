@@ -5,6 +5,7 @@ import { useRouteLoaderData } from "react-router";
 import { DataDisplay } from "~/components/site/data_display";
 import type { Route } from './+types/event_dashboard';
 import type { Route as EventRoute } from "./+types/event_layout"
+import { StandardContainer } from '~/components/site/standard_container';
 
 
 
@@ -19,7 +20,8 @@ export default function EventDashboard({ loaderData }: Route.ComponentProps) {
 
   const stats = data ? data.stats : [];
 
-  return <div>
+  return <StandardContainer>
+
     <div className="border-b border-gray-200 py-5">
       <h3 className="text-base font-semibold text-gray-900">
         Dashboard
@@ -32,7 +34,7 @@ export default function EventDashboard({ loaderData }: Route.ComponentProps) {
     <pre>
       {/* {JSON.stringify(data, null, 2)} */}
     </pre>
-  </div>;
+  </StandardContainer>
 
 }
 

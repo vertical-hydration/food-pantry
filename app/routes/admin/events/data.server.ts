@@ -91,7 +91,7 @@ const getReservations = async (eventId: number) => {
     createdAt: r.createdAt,
   }));
 
-  return mockReservations;
+  return dbRes;
 };
 
 export {

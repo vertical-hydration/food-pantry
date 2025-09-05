@@ -136,28 +136,28 @@ export default function AboutSection() {
                 </p>
               </div>
             </div>
-            <dl className="mt-16 grid grid-cols-1 gap-x-8 gap-y-12 sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mt-28 lg:grid-cols-4">
+            {/* <dl className="mt-16 grid grid-cols-1 gap-x-8 gap-y-12 sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mt-28 lg:grid-cols-4">
               {stats.map((stat, statIdx) => (
                 <div key={statIdx} className="flex flex-col-reverse gap-y-3 border-l border-gray-200 pl-6">
                   <dt className="text-base/7 text-gray-600">{stat.label}</dt>
                   <dd className="text-3xl font-semibold tracking-tight text-gray-900">{stat.value}</dd>
                 </div>
               ))}
-            </dl>
+            </dl> */}
           </div>
         </div>
 
         {/* Image section */}
-        <div className="mt-32 sm:mt-40 xl:mx-auto xl:max-w-7xl xl:px-8">
+        {/* <div className="mt-32 sm:mt-40 xl:mx-auto xl:max-w-7xl xl:px-8">
           <img
             alt=""
             src="https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2894&q=80"
             className="aspect-9/4 w-full object-cover outline-1 -outline-offset-1 outline-black/5 xl:rounded-3xl"
           />
-        </div>
+        </div> */}
 
         {/* Feature section */}
-        <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
+        {/* <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
           <div className="mx-auto max-w-2xl lg:mx-0">
             <h2 className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">Our values</h2>
             <p className="mt-6 text-lg/8 text-gray-700">
@@ -176,7 +176,7 @@ export default function AboutSection() {
               </div>
             ))}
           </dl>
-        </div>
+        </div> */}
 
 
 

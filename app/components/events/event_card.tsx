@@ -6,15 +6,21 @@ export type EventDetails = {
   id: number;
   name: string;
   programName: string;
+  programId: number;
   imageSrc: string;
   imageAlt: string;
   eventDate: Date;
   location: string;
+  time: string;
   pickupTimes: Array<{
     name: string;
     available: boolean;
     id: string;
   }>;
+  reservations: {
+    id: number;
+    status: "cancelled" | "confirmed" | "pending" | "waitlist";
+  }[];
 };
 
 export type EventCardProps = {
@@ -45,7 +51,7 @@ export function EventCard2({ event }: EventCardProps) {
 
 export function EventCard({ event }: EventCardProps) {
 
-
+  const hasReservations = event.reservations && event.reservations.length > 0;
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -85,15 +91,36 @@ export function EventCard({ event }: EventCardProps) {
 
           </div>
         </div>
-        <ReserveCard event={event} />
-        {/* <Link
-          to={`/community/events/${event.id}/reserve`}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
-        >
-          Request Reservation
-          <ArrowRightCircleIcon className="w-4 h-4" />
-        </Link> */}
+        {
+          hasReservations ? <DisplayReservationStatus status={event.reservations[0].status} />
+            : <ReserveCard event={event} />
+        }
+
       </div>
     </div>
+  );
+}
+
+
+function DisplayReservationStatus({ status }: { status: "cancelled" | "confirmed" | "pending" | "waitlist" }) {
+
+  if (status === "confirmed") {
+    return <p>Your reservation has been confirmed.</p>;
+  }
+
+  if (status === "cancelled") {
+    return <p>Sorry we were unable to reserve your spot.</p>;
+  }
+
+  if (status === "pending") {
+    return <p>Your reservation is pending.</p>
+  }
+
+  if (status === "waitlist") {
+    return <p>You are on the waitlist.</p>
+  }
+
+  return (
+    <p>Status: {status}</p>
   );
 }

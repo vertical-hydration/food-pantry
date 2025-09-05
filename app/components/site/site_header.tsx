@@ -35,7 +35,7 @@ export default function SiteHeader() {
             </button>
           </div>
         </div>
-        <a href="#" className="-m-1.5 p-1.5">
+        <Link to="/" className="-m-1.5 p-1.5">
           <span className="sr-only">
             Communities in Schools of Thomasville
           </span>
@@ -44,7 +44,7 @@ export default function SiteHeader() {
             src="https://static.showit.co/200/g23XT-PNTmmO-PSviN1sdQ/261498/cis_favicon.png"
             className="h-10 w-auto"
           />
-        </a>
+        </Link>
         <div className="flex flex-1 justify-end">
           <Link to="/login" className="text-sm/6 font-semibold text-gray-900">
             Log in <span aria-hidden="true">&rarr;</span>

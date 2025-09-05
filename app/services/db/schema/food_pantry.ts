@@ -110,6 +110,9 @@ export const reservations = foodPantry.table(
     eventId: integer("event_id")
       .references(() => events.id)
       .notNull(),
+    applicationId: integer("application_id")
+      .references(() => applications.id)
+      .notNull(),
     option: json(),
     ...timestamps,
   }
@@ -271,6 +274,10 @@ export const reservationsRelations = relations(
     user: one(users, {
       fields: [reservations.userId],
       references: [users.id],
+    }),
+    application: one(applications, {
+      fields: [reservations.applicationId],
+      references: [applications.id],
     }),
   })
 );

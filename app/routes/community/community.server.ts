@@ -9,6 +9,7 @@ import { db } from "~/services/db/db.server";
 import {
   applications,
   applicationStudents,
+  events,
   profiles,
   programs,
   reservations,
@@ -348,7 +349,12 @@ const getEventsOpenToUser = async ({
       },
     });
 
-  return applicationData;
+  const reservationsData =
+    await db.query.reservations.findMany({
+      where: eq(reservations.userId, userId),
+    });
+
+  return { applicationData, reservationsData };
 };
 
 const getUserApplications = async ({
@@ -391,9 +397,30 @@ const createReservation = async ({
 
   const { userId, eventId, pickupTime } = submission.value;
 
+  const eventData = await db.query.events.findFirst({
+    where: eq(events.id, eventId),
+  });
+
+  if (!eventData) {
+    throw new Error("Event not found");
+  }
+
+  const applicationData =
+    await db.query.applications.findFirst({
+      where: and(
+        eq(applications.programId, eventData.id),
+        eq(applications.userId, userId)
+      ),
+    });
+
+  if (!applicationData) {
+    throw new Error("Applicant Data not found");
+  }
+
   await db.insert(reservations).values({
     userId,
     eventId,
+    applicationId: applicationData.id,
     option: {
       pickupTime,
     },

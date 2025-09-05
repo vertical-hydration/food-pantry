@@ -1,8 +1,9 @@
 import { desc } from "drizzle-orm";
 import { Outlet } from "react-router";
-import { NavTabs, PageHeader, type Tab } from "~/components/site/headers";
+import { PageHeader, PageHeading, SectionHeading, } from "~/components/site/headers";
 import type { Route } from "./+types/event_layout";
 import { getEvent, getReservations } from "./data.server";
+import { NavTabs, type Tab } from "~/components/site/nav_tabs";
 
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -17,7 +18,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   }
   const tabs: Tab[] = [
     {
-      name: 'EventMain',
+      name: 'Main',
       to: `/admin/events/${eventId}`,
       // count: '52',
       end: true
@@ -28,6 +29,11 @@ export async function loader({ params }: Route.LoaderArgs) {
       // count: '52',
       end: true
     },
+    {
+      name: 'Edit',
+      to: `/admin/events/${eventId}/edit`,
+      end: true
+    }
 
   ]
 
@@ -49,11 +55,12 @@ export default function EventLayout({ loaderData }: Route.ComponentProps) {
 
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <PageHeader info={info} />
+    <>
+      <PageHeading title="Events" />
+      <SectionHeading title={info.name} />
       <NavTabs tabs={tabs} />
       <Outlet />
-    </div>
+    </>
   )
 
 }

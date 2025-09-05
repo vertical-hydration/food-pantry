@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import { BriefcaseIcon, CalendarIcon, ClockIcon, MapPinIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { StarIcon } from '@heroicons/react/20/solid'
-import { clsx } from 'clsx'
-import type { EventCardProps, EventDetails } from '~/components/events/event_card'
+import type { EventDetails } from '~/components/events/event_card'
 import { useFetcher } from 'react-router'
 
 
@@ -56,8 +54,13 @@ export default function ReserveCard({ event }: { event: EventDetails }) {
                   />
                   <div className="sm:col-span-8 lg:col-span-7 md:mt-8">
 
-
-                    <EventHeader />
+                    <EventHeader details={{
+                      id: event.id,
+                      name: event.name,
+                      location: event.location,
+                      time: event.time,
+                      date: event.eventDate.toLocaleDateString()
+                    }} />
 
                     <section aria-labelledby="options-heading" className="mt-10">
                       <h3 id="options-heading" className="sr-only">
@@ -121,15 +124,7 @@ export default function ReserveCard({ event }: { event: EventDetails }) {
 
 
 
-function EventHeader() {
-  const event = {
-    id: 2,
-    name: "Food Box Pickup",
-    address: "123 Main St, Thomasville, NC",
-    time: "2pm",
-    date: "Jan 9, 2020"
-
-  }
+function EventHeader({ details }: { details: { id: number, name: string, location: string, time: string, date: string } }) {
   return (
     <div className="w-full max-w-xl mx-auto bg-gradient-to-r from-indigo-100 via-white to-indigo-50 rounded-2xl shadow-lg p-8 mb-8 border border-indigo-200 flex flex-col sm:flex-row sm:items-center sm:justify-between">
       <div className="flex-1">
@@ -142,26 +137,26 @@ function EventHeader() {
           <h2
             className="text-3xl font-extrabold text-indigo-700 tracking-tight"
           >
-            {event.name}
+            {details.name}
           </h2>
         </div>
         <div className="flex flex-col sm:flex-row sm:flex-wrap sm:space-x-8 mt-2">
           <div className="flex items-center text-base text-gray-700 mb-2 sm:mb-0">
             <MapPinIcon aria-hidden="true" className="w-5 h-5 text-indigo-400 mr-2" />
             <span className="font-medium">
-              {event.address}
+              {details.location}
             </span>
           </div>
           <div className="flex items-center text-base text-gray-700 mb-2 sm:mb-0">
             <ClockIcon aria-hidden="true" className="w-5 h-5 text-indigo-400 mr-2" />
             <span className="font-medium">
-              {event.time}
+              {details.time}
             </span>
           </div>
           <div className="flex items-center text-base text-gray-700">
             <CalendarIcon aria-hidden="true" className="w-5 h-5 text-indigo-400 mr-2" />
             <span className="font-medium">
-              {event.date}
+              {details.date}
             </span>
           </div>
         </div>
