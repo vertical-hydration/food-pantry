@@ -1,9 +1,15 @@
 import { parseWithZod } from "@conform-to/zod/v4";
 import { db } from "~/services/db/db.server";
-import { events, reservations } from "~/services/db/schema";
-import { NewEventSchema } from "./schemas";
+import {
+  events,
+  reservations,
+  type ReservationStatus,
+} from "~/services/db/schema";
+import {
+  ChangeReservationStatusSchema,
+  NewEventSchema,
+} from "./schemas";
 import { redirect } from "react-router";
-import { write } from "fs";
 import { eq } from "drizzle-orm";
 import {
   mockReservations,
@@ -64,34 +70,65 @@ const getReservations = async (eventId: number) => {
   const dbRes = await db.query.reservations.findMany({
     where: eq(reservations.eventId, eventId),
     with: {
-      user: {
-        columns: {
-          id: true,
-          image: true,
-        },
-        with: {
-          profiles: {
-            columns: {
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      },
+      application: true,
     },
   });
 
-  const mockRes: Reservation[] = dbRes.map((r) => ({
+  // const mockRes: Reservation[] = dbRes.map((r) => ({
+  //   id: r.id.toString(),
+  //   firstName: r.user.profiles?.firstName ?? "Error",
+  //   lastName: r.user.profiles?.lastName ?? "Error",
+  //   userId: r.userId,
+  //   eventId: r.eventId.toString(),
+  //   status: r.status,
+  //   createdAt: r.createdAt,
+  // }));
+
+  return dbRes.map((r) => ({
     id: r.id.toString(),
-    firstName: r.user.profiles?.firstName ?? "Error",
-    lastName: r.user.profiles?.lastName ?? "Error",
+    firstName: r.application.firstName,
+    lastName: r.application.lastName,
     userId: r.userId,
     eventId: r.eventId.toString(),
     status: r.status,
     createdAt: r.createdAt,
   }));
+};
 
-  return dbRes;
+const setReservationStatus = async ({
+  reservationId,
+  status,
+}: {
+  reservationId: number;
+  status: ReservationStatus;
+}) => {
+  return db
+    .update(reservations)
+    .set({ status })
+    .where(eq(reservations.id, reservationId));
+};
+
+const changeReservationStatus = async ({
+  formData,
+}: {
+  formData: FormData;
+}) => {
+  const submission = parseWithZod(formData, {
+    schema: ChangeReservationStatusSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const { id, newStatus } = submission.value;
+
+  await setReservationStatus({
+    reservationId: id,
+    status: newStatus,
+  });
+
+  return submission.reply();
 };
 
 export {
@@ -100,4 +137,5 @@ export {
   createEvent,
   getReservations,
   getprogramEvents,
+  changeReservationStatus,
 };

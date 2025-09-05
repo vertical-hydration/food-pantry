@@ -20,6 +20,13 @@ export const foodPantry = pgSchema("food_pantry");
 export type ProgramDb = typeof programs.$inferSelect;
 export type EventDb = typeof events.$inferSelect;
 
+// Use the type from reservationStatusEnum correctly
+export type ReservationStatus =
+  | "cancelled"
+  | "confirmed"
+  | "pending"
+  | "waitlist";
+
 type FAQ = {
   question: string;
   answer: string;

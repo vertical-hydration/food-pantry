@@ -7,6 +7,9 @@ import type { Route as EventRoute } from "./+types/event_layout"
 import { reserveColumns } from '~/components/events/table_columns';
 import { StandardContainer } from '~/components/site/standard_container';
 import { SectionDescription } from '~/components/site/section_description';
+import { requireSettingsView } from '~/services/auth/auth_utils.server';
+import type { Route } from './+types/event_reservations';
+import { changeReservationStatus } from './data.server';
 
 
 
@@ -16,8 +19,14 @@ export async function loader() {
 }
 
 
+export async function action({ request }: Route.ActionArgs) {
+  await requireSettingsView({ request })
+  const formData = await request.formData();
+  return await changeReservationStatus({ formData })
+}
 
-export default function EventRegistration(
+
+export default function EventReservations(
 ) {
 
   const data = useRouteLoaderData<EventRoute.ComponentProps["loaderData"]>("eventId");
