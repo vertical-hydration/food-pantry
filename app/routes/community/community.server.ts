@@ -408,7 +408,7 @@ const createReservation = async ({
   const applicationData =
     await db.query.applications.findFirst({
       where: and(
-        eq(applications.programId, eventData.id),
+        eq(applications.programId, eventData.programId),
         eq(applications.userId, userId)
       ),
     });

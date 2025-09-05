@@ -1,0 +1,3 @@
+ALTER TABLE "food_pantry"."programs" ALTER COLUMN "image" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "food_pantry"."reservations" ADD COLUMN "application_id" integer NOT NULL;--> statement-breakpoint
+ALTER TABLE "food_pantry"."reservations" ADD CONSTRAINT "reservations_application_id_applications_id_fk" FOREIGN KEY ("application_id") REFERENCES "food_pantry"."applications"("id") ON DELETE no action ON UPDATE no action;
